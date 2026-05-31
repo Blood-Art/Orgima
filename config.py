@@ -1,10 +1,8 @@
 from logging import Logger, getLogger, basicConfig, DEBUG
-from pathlib import Path
 
 IMAGE_EXTENSIONS: list[str] = [".jpg", ".png", ".jpeg", ".webp"]
 LOGGER: Logger = getLogger(__name__)
-MAXIMUM_IMAGE_COUNT_PER_DIRECTORY: int = 100
-ORIGINAL_DIRECTORY_PATH = Path()
+MAXIMUM_IMAGE_COUNT_PER_DIRECTORY: int = 3
 DIRECTORY_NAMES = [
     "alpha",
     "beta",
