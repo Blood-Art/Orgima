@@ -6,23 +6,22 @@ from config import (
     LOGGER,
     DIRECTORY_NAMES,
 )
-from typing import List
 from pathlib import Path
 
 
 class Directory:
-    sorted_directories_stack: List[Path] = []
+    sorted_directories_stack: list[Path] = []
     directories_count: int = 0
 
     def __init__(
         self,
         directory_path: Path,
         image_count: int = 0,
-        images_list: List[Path] | None = None,
+        images_list: list[Path] | None = None,
         name: str = "",
     ):
-        self.directory_path = (directory_path,)
-        self.image_count = (image_count,)
+        self.directory_path = directory_path
+        self.image_count = image_count
         self.images_list = images_list
         self.name = name
 
@@ -35,7 +34,7 @@ class Directory:
         return True
 
     @classmethod
-    def get_sorted_directory_paths(cls, directory_path: Path) -> List[Path]:
+    def get_sorted_directory_paths(cls, directory_path: Path) -> list[Path]:
         cls.sorted_directories_stack = sorted(directory_path.iterdir())
         for directory in cls.sorted_directories_stack:
             if not directory.is_dir():
@@ -49,7 +48,7 @@ class Directory:
 
     @classmethod
     def handle_image_limit(
-        cls, number_of_images: int, images_list: List[Path], directory_path: Path
+        cls, number_of_images: int, images_list: list[Path], directory_path: Path
     ) -> None:
         new_directory_name = cls.next_directory_name(DIRECTORY_NAMES)
         LOGGER.info(
@@ -62,7 +61,7 @@ class Directory:
         cls.move_images_to_new_directory(number_of_images, images_list, new_directory)
 
     @classmethod
-    def next_directory_name(cls, directory_names: List[str]) -> str | None:
+    def next_directory_name(cls, directory_names: list[str]) -> str | None:
         for index, name in enumerate(directory_names):
             if index == cls.directories_count:
                 return name
@@ -82,7 +81,7 @@ class Directory:
 
     @classmethod
     def move_images_to_new_directory(
-        cls, number_of_images: int, images_list: List[Path], new_directory: Path
+        cls, number_of_images: int, images_list: list[Path], new_directory: Path
     ):
         number_of_images_moved: int = 0
         last_image_index: int = -1
