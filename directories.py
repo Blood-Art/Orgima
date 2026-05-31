@@ -14,6 +14,18 @@ class Directory:
     sorted_directories_stack: List[Path] = []
     directories_count: int = 0
 
+    def __init__(
+        self,
+        directory_path: Path,
+        image_count: int = 0,
+        images_list: List[Path] | None = None,
+        name: str = "",
+    ):
+        self.directory_path = (directory_path,)
+        self.image_count = (image_count,)
+        self.images_list = images_list
+        self.name = name
+
     @classmethod
     def directory_exists(cls, directory_path: Path) -> bool:
         if not Path.exists(directory_path):
@@ -23,7 +35,7 @@ class Directory:
         return True
 
     @classmethod
-    def get_sorted_directories(cls, directory_path: Path) -> List[Path]:
+    def get_sorted_directory_paths(cls, directory_path: Path) -> List[Path]:
         cls.sorted_directories_stack = sorted(directory_path.iterdir())
         for directory in cls.sorted_directories_stack:
             if not directory.is_dir():
@@ -89,7 +101,8 @@ class Directory:
 
     @classmethod
     def process_all_directories(cls, directory_path: Path) -> None:
-        directories = cls.get_sorted_directories(directory_path)
+        directories = cls.get_sorted_directory_paths(directory_path)
+
         from images import Image
 
         Image.directories_count = cls.directories_count
@@ -98,4 +111,4 @@ class Directory:
             LOGGER.info(
                 f"Found child directory '{directory.name}' -> Begin rearranging"
             )
-            Image.arrange_images(directory)
+            Image.initialize_directory_images(directory)

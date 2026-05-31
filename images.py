@@ -1,3 +1,4 @@
+from lutris.util.amazon.sds_proto2 import Dir
 from typing import List
 from pathlib import Path
 from config import (
@@ -13,31 +14,37 @@ import re
 class Image:
     directories_count: int = 0
     directory_path: Path = Path()
+    directory_list: List[Directory] = []
 
     @classmethod
-    def arrange_images(cls, directory_path: Path) -> None:
-        if not Directory.directory_exists(cls.directory_path):
+    def initialize_directory_images(cls, directory_path: Path) -> None:
+        """Check for if the directory path is valid and assign it"""
+        if not Directory.directory_exists(directory_path):
             return
 
         cls.directory_path = directory_path
-        images_list: List[Path] = cls.get_sorted_images(directory_path)
+        directory: Directory = Directory(directory_path, name=directory_path.name)
+        directory.images_list, directory.image_count = cls.get_sorted_images(
+            directory.directory_path[0]
+        )
+        directory.name = directory_path.name
 
-        if not images_list:
+        if not directory.images_list:
             LOGGER.info(
-                f"No images were found in '{cls.directory_path.name}' -> Checking for child directories"
+                f"No images were found in '{directory.name}' -> Checking for child directories"
             )
             Directory.process_all_directories(cls.directory_path)
             return
 
-        cls.remove_upscaled_duplicates(images_list)
-        temp_names_list = cls.set_temp_names(images_list)
-        for idx, image in enumerate(temp_names_list):
-            image.rename(image.with_stem(str(idx + 1)))
+        else:
+            LOGGER.info(
+                f"Found '{directory.image_count}' images in {cls.directory_path.name}"
+            )
 
-        LOGGER.info("Task Finished")
+        cls.directory_list.append(directory)
 
     @classmethod
-    def get_sorted_images(cls, directory_path: Path) -> List[Path]:
+    def get_sorted_images(cls, directory_path: Path):
         images_list: List[Path] = []
 
         """ Accept only images """
@@ -46,30 +53,48 @@ class Image:
                 continue
             images_list.append(image)
 
-        number_of_images = len(images_list)
+        number_of_images: int = len(images_list)
 
-        if number_of_images > 0:
-            LOGGER.info(
-                f"Found '{number_of_images}' images in {cls.directory_path.name}"
-            )
-
-        if number_of_images > MAXIMUM_IMAGE_COUNT_PER_DIRECTORY:
-            Directory.handle_image_limit(number_of_images, images_list, directory_path)
-
-        return sorted(images_list, key=lambda img: Path(img).stat().st_ctime)
+        return sorted(
+            images_list, key=lambda img: Path(img).stat().st_ctime
+        ), number_of_images
 
     @classmethod
-    def set_temp_names(cls, images_list: List[Path]) -> List[Path]:
+    def process_all_images(cls):
+        for directory in cls.directory_list:
+            LOGGER.info(f"Processing {directory.name}'s images")
+            if directory.images_list is None:
+                continue
+            if directory.image_count < MAXIMUM_IMAGE_COUNT_PER_DIRECTORY:
+                cls.remove_upscaled_duplicates(directory)
+                temp_names_list = cls.set_temp_names(directory)
+                if temp_names_list is None:
+                    continue
+                for idx, image in enumerate(temp_names_list):
+                    image.rename(image.with_stem(str(idx + 1)))
+
+                LOGGER.info("Task Finished")
+            else:
+                print(f"Directory {directory.name} is full", directory.image_count)
+
+    @classmethod
+    def set_temp_names(cls, directory: Directory) -> List[Path] | None:
+        if directory.images_list is None:
+            return
+        images_list: List[Path] = directory.images_list
         temp_names_list = []
         for image in images_list:
-            temp_name = image.rename(cls.directory_path / f"temp_{image.name}")
+            temp_name = image.rename(directory.directory_path[0] / f"temp_{image.name}")
             temp_names_list.append(temp_name)
 
         return temp_names_list
 
     @classmethod
-    def remove_upscaled_duplicates(cls, images_list: List[Path]) -> None:
+    def remove_upscaled_duplicates(cls, directory: Directory) -> None:
         upscaled_images_list = []
+        if directory.images_list is None:
+            return
+        images_list: List[Path] = directory.images_list
         for image in images_list:
             if ("upscayl") not in image.name:
                 continue
