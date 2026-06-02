@@ -1,5 +1,3 @@
-"""Import config file for MAXIMUM_IMAGE_COUNT_PER_DIRECTORY to update across files"""
-
 from config import (
     MAXIMUM_IMAGE_COUNT_PER_DIRECTORY,
     LOGGER,
@@ -9,9 +7,9 @@ from pathlib import Path
 
 
 class Directory:
-    sorted_directories_stack: list[Path] = []
     directories_count: int = 0
     root_directory_path: Path
+    free_directories_list: list[Directory] = []
 
     def __init__(
         self,
@@ -19,7 +17,7 @@ class Directory:
         name: str = "",
         image_count: int = 0,
         images_moved: int = 0,
-        images_list: list[Path] | None = None,
+        images_list: list[Path] = [],
     ):
         self.path = path
         self.name = name
@@ -28,8 +26,8 @@ class Directory:
         self.images_list = images_list
 
     @classmethod
-    def log_missing_directory(cls):
-        LOGGER.error("Invalid input no such path exists")
+    def log_missing_directory(cls, message: str):
+        LOGGER.error(message)
         LOGGER.info("Exiting...")
 
     @classmethod
@@ -42,11 +40,11 @@ class Directory:
 
         for directory in directories:
             LOGGER.info(f"Found Child Directory '{directory.name}' -> Adding To Queue")
-            Image.initialize_directory_images(directory)
+            Image.initalize_directory_objects(directory)
 
     @classmethod
     def get_sorted_directory_paths(cls, directory_path: Path) -> list[Path]:
-        cls.sorted_directories_stack = sorted(directory_path.iterdir())
+        cls.sorted_directories_stack: list[Path] = sorted(directory_path.iterdir())
         for directory in cls.sorted_directories_stack:
             if not directory.is_dir():
                 continue
@@ -54,41 +52,74 @@ class Directory:
         return cls.sorted_directories_stack
 
     @classmethod
-    def next_directory_name(cls, directory_names: list[str]) -> str | None:
+    def next_directory_name(cls, directory_names: list[str]) -> str:
+        new_name: str = ""
         for index, name in enumerate(directory_names):
             if index == cls.directories_count:
-                return name
+                new_name = name
+        return new_name
 
     @classmethod
-    def create_new_directory(cls, new_directory_name: str | None) -> Path:
-        new_directory_name = cls.next_directory_name(DIRECTORY_NAMES)
-        if new_directory_name is None:
-            LOGGER.error("Ran out of names")
-            return Path()
-
+    def create_new_directory(cls) -> Directory:
+        new_directory_name: str = cls.next_directory_name(DIRECTORY_NAMES)
         new_directory_path: Path = cls.root_directory_path / new_directory_name
         new_directory_path.mkdir(parents=True, exist_ok=True)
+        new_directory: Directory = Directory(new_directory_path)
+        new_directory.name = new_directory_name
+        cls.directories_count += 1
         cls.sorted_directories_stack.append(new_directory_path)
 
-        return new_directory_path
+        return new_directory
 
     @classmethod
-    def find_free_directory(cls, directories: list[Directory]) -> Directory | None:
+    def find_free_directory(cls, directories: list[Directory]) -> Directory:
+        from images import Image
+
+        free_directory: Directory = directories[0]
         for directory in directories:
-            if cls.is_directory_free(directory):
-                return directory
+            if directory.is_free() and directory not in cls.free_directories_list:
+                free_directory = directory
+                cls.free_directories_list.append(free_directory)
+
+            if directory.is_free():
+                free_directory = directory
+
+        if cls.all_directories_full():
+            free_directory = cls.create_new_directory()
+            LOGGER.warning("All directories are full...")
+            LOGGER.info(f"Created new directory '{free_directory.name}'")
+            Image.directory_list.append(free_directory)
+            cls.free_directories_list.append(free_directory)
+        return free_directory
 
     @classmethod
-    def is_directory_free(cls, directory: Directory) -> bool:
-        return directory.image_count < MAXIMUM_IMAGE_COUNT_PER_DIRECTORY
+    def all_directories_full(cls) -> bool:
+        from images import Image
 
-    @classmethod
-    def is_directory_full(cls, directory: Directory) -> bool:
-        return directory.image_count == MAXIMUM_IMAGE_COUNT_PER_DIRECTORY
+        available_directories: list[Directory] = Image.directory_list
+        full_directories: list[Directory] = []
+        for directory in available_directories:
+            if directory.is_full() or directory.is_pass_size_limit():
+                full_directories.append(directory)
+        return full_directories == available_directories
 
-    @classmethod
-    def is_directory_pass_limit(cls, directory: Directory) -> bool:
-        return directory.image_count > MAXIMUM_IMAGE_COUNT_PER_DIRECTORY
+    def log_images_moved(self):
+        LOGGER.info(f"Moved {self.images_moved} to {self.name}")
+
+    def is_free(self) -> bool:
+        return self.image_count < MAXIMUM_IMAGE_COUNT_PER_DIRECTORY
+
+    def is_full(self) -> bool:
+        return self.image_count == MAXIMUM_IMAGE_COUNT_PER_DIRECTORY
+
+    def is_pass_size_limit(self) -> bool:
+        return self.image_count > MAXIMUM_IMAGE_COUNT_PER_DIRECTORY
 
     def contains(self, image: Path) -> bool:
         return image in self.path.iterdir()
+
+    def is_empty_of_images(self) -> bool:
+        return self.image_count == 0
+
+    def is_empty(self) -> bool:
+        return next(self.path.iterdir(), None) is None

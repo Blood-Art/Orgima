@@ -1,13 +1,18 @@
 #!/usr/bin/env python
 from directories import Directory
 from images import Image
+import arguments
 from pathlib import Path
 
 
 def main():
-    directory_path = Path(input("Enter Directory Path : "))
-    Image.initialize_directory_images(directory_path)
-    Image.process_all_directories()
+    args = arguments.get_arguments()
+    # directory_path = Path(input("Enter Directory Path : "))
+    directory_path = Path(args.directory)
+    Image.root_directory_path = directory_path
+    Directory.root_directory_path = directory_path
+    Image.initalize_directory_objects(directory_path)
+    Image.process_directory_images()
 
 
 if __name__ == "__main__":

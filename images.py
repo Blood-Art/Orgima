@@ -1,9 +1,12 @@
-from Cryptodome.Cipher.AES import new
+from Cython.Compiler.Naming import self_cname
+from importlib.resources import path
+import config
 from pathlib import Path
 from config import (
     LOGGER,
     IMAGE_EXTENSIONS,
     MAXIMUM_IMAGE_COUNT_PER_DIRECTORY,
+    DIRECTORY_NAMES,
 )
 
 from directories import Directory
@@ -17,16 +20,16 @@ class Image:
     directory_list: list[Directory] = []
 
     @classmethod
-    def initialize_directory_images(cls, directory_path: Path) -> None:
+    def initalize_directory_objects(cls, directory_path: Path) -> None:
         """Check for if the directory path is valid and assign it"""
         if not directory_path.exists():
-            Directory.log_missing_directory()
+            Directory.log_missing_directory("Invalid input no such path exists")
             sys.exit(1)
 
         if not directory_path.is_dir():
-            return
+            Directory.log_missing_directory("This is not a directory")
+            sys.exit(1)
 
-        cls.root_directory_path = directory_path
         directory: Directory = Directory(directory_path)
         directory.images_list, directory.image_count = cls.get_sorted_images(
             directory_path
@@ -34,16 +37,17 @@ class Image:
         directory.name = directory_path.name
         directory.root_directory_path = cls.root_directory_path
 
-        if not directory.images_list:
+        if directory.is_empty():
+            return
+        if directory.is_empty_of_images():
             LOGGER.info(
-                f"No images were found in '{directory.name}' -> Checking for Child Directories"
+                f"No images were found in [{directory.name}] -> Checking for Child Directories"
             )
             Directory.process_all_directories(cls.root_directory_path)
 
-        else:
-            LOGGER.info(f"{directory.path.name} has '{directory.image_count}' images")
-
-        cls.directory_list.append(directory)
+        """ Exclude Root Directory """
+        if directory.path is not cls.root_directory_path:
+            cls.directory_list.append(directory)
 
     @classmethod
     def get_sorted_images(cls, directory_path: Path) -> tuple[list[Path], int]:
@@ -62,64 +66,92 @@ class Image:
         ), number_of_images
 
     @classmethod
-    def process_all_directories(cls):
+    def process_directory_images(cls):
         for directory in cls.directory_list:
             LOGGER.info(f"Processing {directory.name}'s images")
-            if directory.images_list is None:
-                continue
             cls.process_all_images(directory)
 
     @classmethod
     def process_all_images(cls, directory: Directory):
-        cls.remove_upscaled_duplicates(directory)
-        temp_names_list = cls.set_temp_names(directory)
-        if temp_names_list is None:
-            return
+        cls.check_directory_size(directory)
+        # cls.remove_upscaled_duplicates(directory)
+        # temp_names_list = cls.set_temp_names(directory)
+        # if temp_names_list is None:
+        #     return
 
-        for idx, image in enumerate(temp_names_list):
-            cls.move_images_to_free_directory(directory, image, idx)
+        # for idx, image in enumerate(temp_names_list):
+        #     pass
 
         LOGGER.info("Task Finished")
 
-    """ Need to handle edgecase where the image names are not sequential like 1, 3 causes overwriting """
+    """ Need to handle edgecase where the image names 
+    are not sequential like 1, 3 causes overwriting 
+    the fix to this is probably not renaming the moved image and keeping it's temp name"""
+
+    @classmethod
+    def check_directory_size(cls, directory: Directory):
+        if directory.is_empty():
+            return
+
+        if directory.is_pass_size_limit():
+            LOGGER.warning(
+                f"{directory.name} has passed the size limit of '{MAXIMUM_IMAGE_COUNT_PER_DIRECTORY}'"
+            )
+            LOGGER.info("Freeing up some space...")
+
+        for index, image in enumerate(directory.images_list):
+            if directory.is_pass_size_limit():
+                cls.move_images_to_free_directory(directory, image, index)
+            else:
+                break
 
     @classmethod
     def move_images_to_free_directory(
-        cls, directory: Directory, image: Path, image_index: int
+        cls, current_directory: Directory, image: Path, image_index: int
     ):
-        if Directory.is_directory_pass_limit(directory):
-            free_directory: Directory | None = Directory.find_free_directory(
-                cls.directory_list
-            )
-            """ Create A New Directory """
-            if free_directory is None:
-                print("Free directory is None")
-                return
+        free_directory = Directory.find_free_directory(cls.directory_list)
+        # new_directory = None
+        # if free_directory is None:
+        #
+        # if new_directory is not None:
 
-            image_destination_path: Path = free_directory.path / (
-                str(
-                    free_directory.image_count
-                    + image_index
-                    + 1
-                    - directory.images_moved
-                )
-                + image.suffix
-            )
-            directory.image_count -= 1
-            free_directory.image_count += 1
-            directory.images_moved += 1
-            print(f"moved {image.name} from {directory.name} to {free_directory.name}")
-        else:
-            image_destination_path: Path = directory.path / (
-                str(image_index + 1 - directory.images_moved) + image.suffix
-            )
+        # if Directory.all_directories_full():
+        #     free_directory = new_directory
 
-        image.rename(image_destination_path)
+        # free_directories: list[Directory] = []
+        # free_directories.append(free_directory)
+        # if Directory.all_directories_full() and current_directory.is_pass_size_limit():
+        #     new_directory: Directory = Directory.create_new_directory()
+        # free_directory = new_directory
+        # free_directories.append(new_directory)
+        # LOGGER.warning("All directories are full...")
+        # LOGGER.info(f"Created new directory '{new_directory.name}'")
+        # cls.directory_list.append(new_directory)
+
+        image_destination = (
+            free_directory.path
+            / f"moved_{free_directory.image_count + 1}{image.suffix}"
+        )
+
+        image.move(image_destination)
+
+        current_directory.image_count -= 1
+        free_directory.images_moved += 1
+        free_directory.image_count += 1
+        if current_directory.is_full():
+            for dir in Directory.free_directories_list:
+                dir.log_images_moved()
+
+    @classmethod
+    def rename_images(cls, directory: Directory):
+        temp_names_list: list[Path] | None = cls.set_temp_names(directory)
+        if temp_names_list is None:
+            return
+        for image_index, image in enumerate(temp_names_list):
+            ...
 
     @classmethod
     def set_temp_names(cls, directory: Directory) -> list[Path] | None:
-        if directory.images_list is None:
-            return
         images_list: list[Path] = directory.images_list
         temp_names_list = []
         for image in images_list:
@@ -131,8 +163,6 @@ class Image:
     @classmethod
     def remove_upscaled_duplicates(cls, directory: Directory) -> None:
         upscaled_images_list = []
-        if directory.images_list is None:
-            return
         images_list: list[Path] = directory.images_list
         for image in images_list:
             if ("upscayl") not in image.name:
