@@ -65,32 +65,27 @@ class Image:
     def process_directory_images(cls) -> None:
         for directory in cls.directory_list:
             LOGGER.info(f"Processing {directory.name}'s images")
-            cls.process_all_images(directory)
+            cls.check_directory_size(directory)
 
-    @classmethod
-    def process_all_images(cls, directory: Directory) -> None:
-        cls.check_directory_size(directory)
-        cls.rename_images(directory)
-        LOGGER.info("Task Finished")
+        for directory in cls.directory_list:
+            cls.rename_images(directory)
+            LOGGER.info("Task Finished")
 
     @classmethod
     def check_directory_size(cls, directory: Directory) -> None:
-        # if directory.is_empty():
-        #     return
-
         if directory.is_pass_size_limit():
             LOGGER.warning(
                 f"{directory.name} has passed the size limit of '{MAXIMUM_IMAGE_COUNT_PER_DIRECTORY}'"
             )
             LOGGER.info("Freeing up some space...")
 
-        for index, image in enumerate(list(directory.images_list)):
+        for image in list(directory.images_list):
             if directory.is_pass_size_limit():
-                cls.move_images_to_free_directory(directory, image, index)
+                cls.move_images_to_free_directory(directory, image)
 
     @classmethod
     def move_images_to_free_directory(
-        cls, current_directory: Directory, image: Path, image_index: int
+        cls, current_directory: Directory, image: Path
     ) -> None:
         free_directory = Directory.find_free_directory(cls.directory_list)
         image_destination = (
@@ -104,7 +99,7 @@ class Image:
         free_directory.image_count += 1
         image_moved = image.move(image_destination)
         free_directory.images_list.append(image_moved)
-        """ Log every image moved when it no longer passes the directory limit """
+        """ Log every image moved when it no longer passes the directory limit i.e becomes 'full' """
         if current_directory.is_full():
             for free_directory in Directory.free_directories_list:
                 free_directory.log_images_moved()
@@ -119,7 +114,7 @@ class Image:
     def set_temp_names(cls, directory: Directory) -> list[Path]:
         images_list: list[Path] = directory.images_list
         temp_names_list = []
-        for image in images_list:
+        for image in list(images_list):
             temp_name = image.rename(directory.path / f"temp_{image.name}")
             temp_names_list.append(temp_name)
 
