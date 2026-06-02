@@ -1,12 +1,8 @@
-from Cython.Compiler.Naming import self_cname
-from importlib.resources import path
-import config
 from pathlib import Path
 from config import (
     LOGGER,
     IMAGE_EXTENSIONS,
     MAXIMUM_IMAGE_COUNT_PER_DIRECTORY,
-    DIRECTORY_NAMES,
 )
 
 from directories import Directory
@@ -66,32 +62,21 @@ class Image:
         ), number_of_images
 
     @classmethod
-    def process_directory_images(cls):
+    def process_directory_images(cls) -> None:
         for directory in cls.directory_list:
             LOGGER.info(f"Processing {directory.name}'s images")
             cls.process_all_images(directory)
 
     @classmethod
-    def process_all_images(cls, directory: Directory):
+    def process_all_images(cls, directory: Directory) -> None:
         cls.check_directory_size(directory)
-        # cls.remove_upscaled_duplicates(directory)
-        # temp_names_list = cls.set_temp_names(directory)
-        # if temp_names_list is None:
-        #     return
-
-        # for idx, image in enumerate(temp_names_list):
-        #     pass
-
+        cls.rename_images(directory)
         LOGGER.info("Task Finished")
 
-    """ Need to handle edgecase where the image names 
-    are not sequential like 1, 3 causes overwriting 
-    the fix to this is probably not renaming the moved image and keeping it's temp name"""
-
     @classmethod
-    def check_directory_size(cls, directory: Directory):
-        if directory.is_empty():
-            return
+    def check_directory_size(cls, directory: Directory) -> None:
+        # if directory.is_empty():
+        #     return
 
         if directory.is_pass_size_limit():
             LOGGER.warning(
@@ -99,59 +84,39 @@ class Image:
             )
             LOGGER.info("Freeing up some space...")
 
-        for index, image in enumerate(directory.images_list):
+        for index, image in enumerate(list(directory.images_list)):
             if directory.is_pass_size_limit():
                 cls.move_images_to_free_directory(directory, image, index)
-            else:
-                break
 
     @classmethod
     def move_images_to_free_directory(
         cls, current_directory: Directory, image: Path, image_index: int
-    ):
+    ) -> None:
         free_directory = Directory.find_free_directory(cls.directory_list)
-        # new_directory = None
-        # if free_directory is None:
-        #
-        # if new_directory is not None:
-
-        # if Directory.all_directories_full():
-        #     free_directory = new_directory
-
-        # free_directories: list[Directory] = []
-        # free_directories.append(free_directory)
-        # if Directory.all_directories_full() and current_directory.is_pass_size_limit():
-        #     new_directory: Directory = Directory.create_new_directory()
-        # free_directory = new_directory
-        # free_directories.append(new_directory)
-        # LOGGER.warning("All directories are full...")
-        # LOGGER.info(f"Created new directory '{new_directory.name}'")
-        # cls.directory_list.append(new_directory)
-
         image_destination = (
             free_directory.path
             / f"moved_{free_directory.image_count + 1}{image.suffix}"
         )
 
-        image.move(image_destination)
-
         current_directory.image_count -= 1
+        current_directory.images_list.remove(image)
         free_directory.images_moved += 1
         free_directory.image_count += 1
+        image_moved = image.move(image_destination)
+        free_directory.images_list.append(image_moved)
+        """ Log every image moved when it no longer passes the directory limit """
         if current_directory.is_full():
-            for dir in Directory.free_directories_list:
-                dir.log_images_moved()
+            for free_directory in Directory.free_directories_list:
+                free_directory.log_images_moved()
 
     @classmethod
-    def rename_images(cls, directory: Directory):
-        temp_names_list: list[Path] | None = cls.set_temp_names(directory)
-        if temp_names_list is None:
-            return
+    def rename_images(cls, directory: Directory) -> None:
+        temp_names_list: list[Path] = cls.set_temp_names(directory)
         for image_index, image in enumerate(temp_names_list):
-            ...
+            image.rename(image.with_stem(f"{image_index + 1}"))
 
     @classmethod
-    def set_temp_names(cls, directory: Directory) -> list[Path] | None:
+    def set_temp_names(cls, directory: Directory) -> list[Path]:
         images_list: list[Path] = directory.images_list
         temp_names_list = []
         for image in images_list:

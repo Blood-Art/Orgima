@@ -13,7 +13,7 @@ class Directory:
 
     def __init__(
         self,
-        path: Path,
+        path: Path = Path(),
         name: str = "",
         image_count: int = 0,
         images_moved: int = 0,
@@ -75,7 +75,7 @@ class Directory:
     def find_free_directory(cls, directories: list[Directory]) -> Directory:
         from images import Image
 
-        free_directory: Directory = directories[0]
+        free_directory: Directory = Directory()
         for directory in directories:
             if directory.is_free() and directory not in cls.free_directories_list:
                 free_directory = directory
@@ -104,7 +104,7 @@ class Directory:
         return full_directories == available_directories
 
     def log_images_moved(self):
-        LOGGER.info(f"Moved {self.images_moved} to {self.name}")
+        LOGGER.info(f"Moved {self.images_moved} images to {self.name}")
 
     def is_free(self) -> bool:
         return self.image_count < MAXIMUM_IMAGE_COUNT_PER_DIRECTORY
