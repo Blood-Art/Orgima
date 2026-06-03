@@ -13,7 +13,9 @@ class Directory:
         name: str = "",
         image_count: int = 0,
         images_moved: int = 0,
-        images_list: list[Path] = [],
+        images_list: list[  # <- Make sure to initialize to make a copy
+            Path
+        ] = [],
     ):
         self.path = path
         self.name = name
@@ -53,28 +55,27 @@ class Directory:
         return cls.sorted_directories_stack
 
     @classmethod
-    def next_directory_name(cls, directory_names: list[str]) -> str:
+    def create_new_directory(cls) -> Directory:
+        new_directory_name: str = cls.get_next_directory_name(DIRECTORY_NAMES)
+        new_directory_path: Path = cls.ROOT_DIRECTORY_PATH / new_directory_name
+        new_directory_path.mkdir(parents=True, exist_ok=True)
+        new_directory: Directory = Directory(
+            new_directory_path,
+            name=new_directory_name,
+            images_list=[],
+        )
+        cls.directories_count += 1
+        # cls.sorted_directories_stack.append(new_directory_path)
+
+        return new_directory
+
+    @classmethod
+    def get_next_directory_name(cls, directory_names: list[str]) -> str:
         new_name: str = ""
         for index, name in enumerate(directory_names):
             if index == cls.directories_count:
                 new_name = name
         return new_name
-
-    @classmethod
-    def create_new_directory(cls) -> Directory:
-        new_directory_name: str = cls.next_directory_name(DIRECTORY_NAMES)
-        new_directory_path: Path = cls.ROOT_DIRECTORY_PATH
-        new_directory_path.mkdir(parents=True, exist_ok=True)
-        new_directory: Directory = Directory(new_directory_path)
-        new_directory.name = new_directory_name
-        new_directory.images_list = []
-        new_directory.image_count = 0
-        new_directory.images_moved = 0
-        # new_directory.root_directory_path = ROOT_DIRECTORY
-        cls.directories_count += 1
-        cls.sorted_directories_stack.append(new_directory_path)
-
-        return new_directory
 
     @classmethod
     def find_free_directory(cls, directories: list[Directory]) -> Directory:
