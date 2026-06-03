@@ -107,6 +107,7 @@ class Image:
         if current_directory.is_full():
             for free_directory in Directory.free_directories_list:
                 free_directory.log_images_moved()
+        Directory.free_directories_list.clear()
 
     @classmethod
     def rename_images(cls, directory: Directory) -> None:

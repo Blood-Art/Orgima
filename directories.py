@@ -68,6 +68,10 @@ class Directory:
         new_directory_path.mkdir(parents=True, exist_ok=True)
         new_directory: Directory = Directory(new_directory_path)
         new_directory.name = new_directory_name
+        new_directory.images_list = []
+        new_directory.image_count = 0
+        new_directory.images_moved = 0
+        new_directory.root_directory_path = cls.root_directory_path
         cls.directories_count += 1
         cls.sorted_directories_stack.append(new_directory_path)
 
