@@ -19,11 +19,11 @@ class Image:
     def initalize_directory_objects(cls, directory_path: Path) -> None:
         """Check for if the directory path is valid and assign it"""
         if not directory_path.exists():
-            Directory.log_missing_directory("Invalid input no such path exists")
+            Directory.log_missing_directory("Invalid input no such path exists ❌")
             sys.exit(1)
 
         if not directory_path.is_dir():
-            Directory.log_missing_directory("This is not a directory")
+            Directory.log_missing_directory("This is not a directory ❌")
             sys.exit(1)
 
         directory: Directory = Directory(directory_path)
@@ -37,7 +37,7 @@ class Image:
             return
         if directory.is_empty_of_images():
             LOGGER.info(
-                f"No images were found in [{directory.name}] -> Checking for Child Directories"
+                f"No images were found in [{directory.name}] -> Checking for Child Directories ℹ️"
             )
             Directory.process_all_directories(cls.root_directory_path)
 
@@ -65,19 +65,23 @@ class Image:
     def process_directory_images(cls) -> None:
         for directory in cls.directory_list:
             LOGGER.info(f"Processing {directory.name}'s images")
+            LOGGER.info(f"Checking {directory.name}'s size limits")
             cls.check_directory_size(directory)
 
         for directory in cls.directory_list:
             cls.rename_images(directory)
+            LOGGER.info(f"Images in {directory.name} Organized successfully ✅")
             LOGGER.info("Task Finished")
 
     @classmethod
     def check_directory_size(cls, directory: Directory) -> None:
         if directory.is_pass_size_limit():
             LOGGER.warning(
-                f"{directory.name} has passed the size limit of '{MAXIMUM_IMAGE_COUNT_PER_DIRECTORY}'"
+                f"{directory.name} has passed the size limit of '{MAXIMUM_IMAGE_COUNT_PER_DIRECTORY}' ⚠️"
             )
             LOGGER.info("Freeing up some space...")
+        else:
+            LOGGER.info(f"{directory.name} has sufficient space ✅")
 
         for image in list(directory.images_list):
             if directory.is_pass_size_limit():

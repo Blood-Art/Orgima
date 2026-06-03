@@ -39,7 +39,9 @@ class Directory:
         Image.directories_count = cls.directories_count
 
         for directory in directories:
-            LOGGER.info(f"Found Child Directory '{directory.name}' -> Adding To Queue")
+            LOGGER.info(
+                f"Found Child Directory '{directory.name}' -> Adding To Queue ➕"
+            )
             Image.initalize_directory_objects(directory)
 
     @classmethod
@@ -86,8 +88,8 @@ class Directory:
 
         if cls.all_directories_full():
             free_directory = cls.create_new_directory()
-            LOGGER.warning("All directories are full...")
-            LOGGER.info(f"Created new directory '{free_directory.name}'")
+            LOGGER.warning("All directories are full... ⚠️")
+            LOGGER.info(f"Created new directory '{free_directory.name}' ℹ️")
             Image.directory_list.append(free_directory)
             cls.free_directories_list.append(free_directory)
         return free_directory
@@ -104,7 +106,7 @@ class Directory:
         return full_directories == available_directories
 
     def log_images_moved(self):
-        LOGGER.info(f"Moved {self.images_moved} images to {self.name}")
+        LOGGER.info(f"Moved {self.images_moved} images to {self.name} ↩️")
 
     def is_free(self) -> bool:
         return self.image_count < MAXIMUM_IMAGE_COUNT_PER_DIRECTORY
