@@ -8,11 +8,19 @@ parser.add_argument(
     help="Input for a directory path to organize",
 )
 parser.add_argument(
-    "-s",
-    "--size",
+    "-c",
+    "--count",
     type=int,
     default=3,
-    help="Set the image size limit of a directory default $(default)s",
+    help="Set the image count limit per directory. (default: %(default)s)",
+)
+
+parser.add_argument(
+    "-ih",
+    "--hidden",
+    default=False,
+    help="Wether to include hidden directories or not. (default: %(default)s)",
+    action="store_true",
 )
 
 

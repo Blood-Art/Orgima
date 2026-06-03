@@ -1,10 +1,10 @@
 import arguments
 from logging import Logger, getLogger, basicConfig, DEBUG
 
-args = arguments.get_arguments()
+ARGUMENTS = arguments.get_arguments()
 IMAGE_EXTENSIONS: list[str] = [".jpg", ".png", ".jpeg", ".webp"]
 LOGGER: Logger = getLogger(__name__)
-MAXIMUM_IMAGE_COUNT_PER_DIRECTORY: int = args.size
+MAXIMUM_IMAGE_COUNT_PER_DIRECTORY: int = ARGUMENTS.count
 DIRECTORY_NAMES = [
     "alpha",
     "beta",

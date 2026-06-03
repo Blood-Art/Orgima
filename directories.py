@@ -1,14 +1,10 @@
-from config import (
-    MAXIMUM_IMAGE_COUNT_PER_DIRECTORY,
-    LOGGER,
-    DIRECTORY_NAMES,
-)
+from config import MAXIMUM_IMAGE_COUNT_PER_DIRECTORY, LOGGER, DIRECTORY_NAMES, ARGUMENTS
 from pathlib import Path
 
 
 class Directory:
+    ROOT_DIRECTORY_PATH: Path = Path()
     directories_count: int = 0
-    root_directory_path: Path
     free_directories_list: list[Directory] = []
 
     def __init__(
@@ -26,7 +22,7 @@ class Directory:
         self.images_list = images_list
 
     @classmethod
-    def log_missing_directory(cls, message: str):
+    def log_directory_error(cls, message: str):
         LOGGER.error(message)
         LOGGER.info("Exiting...")
 
@@ -36,8 +32,6 @@ class Directory:
 
         from images import Image
 
-        Image.directories_count = cls.directories_count
-
         for directory in directories:
             LOGGER.info(
                 f"Found Child Directory '{directory.name}' -> Adding To Queue ➕"
@@ -46,10 +40,15 @@ class Directory:
 
     @classmethod
     def get_sorted_directory_paths(cls, directory_path: Path) -> list[Path]:
-        cls.sorted_directories_stack: list[Path] = sorted(directory_path.iterdir())
-        for directory in cls.sorted_directories_stack:
+        cls.sorted_directories_stack: list[Path] = []
+
+        for directory in sorted(directory_path.iterdir()):
             if not directory.is_dir():
                 continue
+
+            if not ARGUMENTS.hidden and directory.name.startswith("."):
+                continue
+            cls.sorted_directories_stack.append(directory)
         cls.directories_count = len(cls.sorted_directories_stack)
         return cls.sorted_directories_stack
 
@@ -64,14 +63,14 @@ class Directory:
     @classmethod
     def create_new_directory(cls) -> Directory:
         new_directory_name: str = cls.next_directory_name(DIRECTORY_NAMES)
-        new_directory_path: Path = cls.root_directory_path / new_directory_name
+        new_directory_path: Path = cls.ROOT_DIRECTORY_PATH
         new_directory_path.mkdir(parents=True, exist_ok=True)
         new_directory: Directory = Directory(new_directory_path)
         new_directory.name = new_directory_name
         new_directory.images_list = []
         new_directory.image_count = 0
         new_directory.images_moved = 0
-        new_directory.root_directory_path = cls.root_directory_path
+        # new_directory.root_directory_path = ROOT_DIRECTORY
         cls.directories_count += 1
         cls.sorted_directories_stack.append(new_directory_path)
 
@@ -105,7 +104,7 @@ class Directory:
         available_directories: list[Directory] = Image.directory_list
         full_directories: list[Directory] = []
         for directory in available_directories:
-            if directory.is_full() or directory.is_pass_size_limit():
+            if directory.is_full() or directory.is_pass_count_limit():
                 full_directories.append(directory)
         return full_directories == available_directories
 
@@ -118,7 +117,7 @@ class Directory:
     def is_full(self) -> bool:
         return self.image_count == MAXIMUM_IMAGE_COUNT_PER_DIRECTORY
 
-    def is_pass_size_limit(self) -> bool:
+    def is_pass_count_limit(self) -> bool:
         return self.image_count > MAXIMUM_IMAGE_COUNT_PER_DIRECTORY
 
     def contains(self, image: Path) -> bool:

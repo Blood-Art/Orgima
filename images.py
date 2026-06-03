@@ -1,3 +1,4 @@
+from config import ARGUMENTS
 from pathlib import Path
 from config import (
     LOGGER,
@@ -7,31 +8,22 @@ from config import (
 
 from directories import Directory
 import re
-import sys
 
 
 class Image:
-    directories_count: int = 0
-    root_directory_path: Path = Path()
     directory_list: list[Directory] = []
 
     @classmethod
     def initalize_directory_objects(cls, directory_path: Path) -> None:
-        """Check for if the directory path is valid and assign it"""
-        if not directory_path.exists():
-            Directory.log_missing_directory("Invalid input no such path exists ❌")
-            sys.exit(1)
-
         if not directory_path.is_dir():
-            Directory.log_missing_directory("This is not a directory ❌")
-            sys.exit(1)
-
-        directory: Directory = Directory(directory_path)
+            return
+        directory: Directory = Directory(
+            path=directory_path,
+            name=directory_path.name,
+        )
         directory.images_list, directory.image_count = cls.get_sorted_images(
             directory_path
         )
-        directory.name = directory_path.name
-        directory.root_directory_path = cls.root_directory_path
 
         if directory.is_empty():
             return
@@ -39,10 +31,10 @@ class Image:
             LOGGER.info(
                 f"No images were found in [{directory.name}] -> Checking for Child Directories ℹ️"
             )
-            Directory.process_all_directories(cls.root_directory_path)
+            Directory.process_all_directories(directory.ROOT_DIRECTORY_PATH)
 
         """ Exclude Root Directory """
-        if directory.path is not cls.root_directory_path:
+        if directory.path is not directory.ROOT_DIRECTORY_PATH:
             cls.directory_list.append(directory)
 
     @classmethod
@@ -65,8 +57,8 @@ class Image:
     def process_directory_images(cls) -> None:
         for directory in cls.directory_list:
             LOGGER.info(f"Processing {directory.name}'s images")
-            LOGGER.info(f"Checking {directory.name}'s size limits")
-            cls.check_directory_size(directory)
+            LOGGER.info(f"Checking {directory.name}'s image counts")
+            cls.check_directory_image_count(directory)
 
         for directory in cls.directory_list:
             cls.rename_images(directory)
@@ -74,17 +66,17 @@ class Image:
             LOGGER.info("Task Finished")
 
     @classmethod
-    def check_directory_size(cls, directory: Directory) -> None:
-        if directory.is_pass_size_limit():
+    def check_directory_image_count(cls, directory: Directory) -> None:
+        if directory.is_pass_count_limit():
             LOGGER.warning(
-                f"{directory.name} has passed the size limit of '{MAXIMUM_IMAGE_COUNT_PER_DIRECTORY}' ⚠️"
+                f"{directory.name} has passed the limit of '{MAXIMUM_IMAGE_COUNT_PER_DIRECTORY}' images ⚠️"
             )
             LOGGER.info("Freeing up some space...")
         else:
             LOGGER.info(f"{directory.name} has sufficient space ✅")
 
         for image in list(directory.images_list):
-            if directory.is_pass_size_limit():
+            if directory.is_pass_count_limit():
                 cls.move_images_to_free_directory(directory, image)
 
     @classmethod
