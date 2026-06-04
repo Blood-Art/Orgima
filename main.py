@@ -2,8 +2,8 @@
 from directories import Directory
 from images import Image
 from pathlib import Path
+from config import ARGUMENTS
 import sys
-import arguments
 
 
 """Check for if the directory path is valid and assign it"""
@@ -19,11 +19,10 @@ def validate_directory_input(directory: Path):
 
 
 def main():
-    args = arguments.get_arguments()
-    directory_path = Path(args.directory)
+    directory_path = Path(ARGUMENTS.directory)
     validate_directory_input(directory_path)
     Directory.ROOT_DIRECTORY_PATH = directory_path
-    Image.initalize_directory_objects(directory_path)
+    Directory.initalize_directory_objects(directory_path)
     Image.process_directory_images()
 
 
