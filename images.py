@@ -5,8 +5,8 @@ from config import (
     ARGUMENTS,
 )
 
-from directories import Directory
 import re
+from directories import Directory
 
 
 class Image:
@@ -28,9 +28,6 @@ class Image:
 
     @classmethod
     def process_directory_images(cls) -> None:
-
-        for directory in Directory.directories_list:
-            LOGGER.info(f"Processing {directory.name}'s images")
 
         if not ARGUMENTS.disable_remove_duplicates:
             LOGGER.info("Removing Duplicate non-upscaled images Enabled ℹ️")
@@ -87,9 +84,9 @@ class Image:
 
     @classmethod
     def move_image_to_directory(
-        cls, directory: Directory, image: Path, image_destination: Path
+        cls, new_directory: Directory, image: Path, image_destination: Path
     ):
-        directory.image_count += 1
-        directory.images_moved += 1
+        new_directory.image_count += 1
+        new_directory.images_moved_count += 1
         image_moved = image.move(image_destination)
-        directory.images_list.append(image_moved)
+        new_directory.images_list.append(image_moved)
