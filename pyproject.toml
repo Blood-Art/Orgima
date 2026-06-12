@@ -1,5 +1,5 @@
 [project]
-name = "imaorg"
+name = "orgima"
 version = "0.1.0"
 description = "Automation script for organzing and renaming images"
 readme = "README.md"

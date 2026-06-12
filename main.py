@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from directories import Directory
-from images import Image
+from image_manager import ImageManager
 from pathlib import Path
 from config import ARGUMENTS
 import sys
@@ -22,8 +22,8 @@ def main():
     directory_path = Path(ARGUMENTS.directory)
     validate_directory_input(directory_path)
     Directory.ROOT_DIRECTORY_PATH = directory_path
-    Directory.initalize_directory_objects(directory_path)
-    Image.process_directory_images()
+    Directory.initialize_directory_objects(directory_path)
+    ImageManager.process_directory_images()
 
 
 if __name__ == "__main__":

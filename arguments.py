@@ -21,17 +21,18 @@ class Arguments:
         "-i",
         "--include_hidden",
         default=False,
-        help="Wether to include hidden directories or not. (default: %(default)s)",
+        help="Whether to include hidden directories or not. (default: %(default)s)",
         action="store_true",
     )
     parser.add_argument(
         "-drd",
         "--disable_remove_duplicates",
         default=False,
-        help="Wether to disable removing non-upscaled duplicate images (default: %(default)s)",
+        help="Whether to disable removing non-upscaled duplicate images (default: %(default)s)",
         action="store_true",
     )
 
+    @staticmethod
     def get_arguments():
         args = Arguments.parser.parse_args()
         return args

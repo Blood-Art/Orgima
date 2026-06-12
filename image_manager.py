@@ -9,7 +9,7 @@ import re
 from directories import Directory
 
 
-class Image:
+class ImageManager:
     @classmethod
     def get_sorted_images(cls, directory_path: Path) -> tuple[list[Path], int]:
         images_list: list[Path] = []
@@ -36,7 +36,7 @@ class Image:
 
         for directory in Directory.directories_list:
             LOGGER.info(f"Checking {directory.name}'s image counts")
-            Directory.check_directory_image_count(directory)
+            directory.check_directory_image_count()
 
         for directory in Directory.directories_list:
             cls.rename_images(directory)
@@ -74,19 +74,7 @@ class Image:
         for image in list(images_list):
             if image.stem in upscaled_images_list:
                 LOGGER.info(f"Deleted duplicate {image.name} image")
-                cls.remove_image_from_directory(directory, image)
+                directory.remove_image_from_directory(image)
                 image.unlink(missing_ok=True)
 
-    @classmethod
-    def remove_image_from_directory(cls, directory: Directory, image: Path):
-        directory.images_list.remove(image)
-        directory.image_count -= 1
-
-    @classmethod
-    def move_image_to_directory(
-        cls, new_directory: Directory, image: Path, image_destination: Path
-    ):
-        new_directory.image_count += 1
-        new_directory.images_moved_count += 1
-        image_moved = image.move(image_destination)
-        new_directory.images_list.append(image_moved)
+    def remove_duplicates(self, directory: Directory) -> None: ...
