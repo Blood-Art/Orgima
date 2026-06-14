@@ -4,4 +4,10 @@ version = "0.1.0"
 description = "Automation script for organzing and renaming images"
 readme = "README.md"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "filetype>=1.2.0",
+    "pillow>=12.2.0",
+]
+
+[project.scripts]
+orgima = "main:main"

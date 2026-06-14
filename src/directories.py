@@ -50,11 +50,6 @@ class Directory:
             cls.directories_list.append(directory)
 
     @classmethod
-    def log_directory_error(cls, message: str):
-        LOGGER.error(message)
-        LOGGER.info("Exiting...")
-
-    @classmethod
     def process_child_directories(cls, directory_path: Path) -> None:
         child_directories = cls.get_sorted_directory_paths(directory_path)
 

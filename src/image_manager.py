@@ -1,36 +1,21 @@
+from image_manipulation import ImageManipulator
 from pathlib import Path
 from config import (
     LOGGER,
-    IMAGE_EXTENSIONS,
     ARGUMENTS,
 )
-
 import re
 from directories import Directory
 
 
 class ImageManager:
     @classmethod
-    def get_sorted_images(cls, directory_path: Path) -> tuple[list[Path], int]:
-        images_list: list[Path] = []
-
-        """ Accept only images """
-        for image in directory_path.iterdir():
-            if image.suffix not in IMAGE_EXTENSIONS:
-                continue
-            images_list.append(image)
-
-        number_of_images: int = len(images_list)
-
-        return sorted(
-            images_list, key=lambda img: Path(img).stat().st_ctime
-        ), number_of_images
-
-    @classmethod
     def process_directory_images(cls) -> None:
 
+        if not Directory.directories_list:
+            return
+
         if not ARGUMENTS.disable_remove_duplicates:
-            LOGGER.info("Removing Duplicate non-upscaled images Enabled ℹ️")
             for directory in Directory.directories_list:
                 cls.remove_upscaled_duplicates(directory)
 
@@ -43,11 +28,20 @@ class ImageManager:
             LOGGER.info(f"Images in {directory.name} Organized successfully ✅")
             LOGGER.info("Task Finished")
 
+        if ARGUMENTS.enable_rounding:
+            for directory in Directory.directories_list:
+                manipulator = ImageManipulator(directory)
+                manipulator.round_directory_images()
+
     @classmethod
     def rename_images(cls, directory: Directory) -> None:
         temp_names_list: list[Path] = cls.set_temp_names(directory)
+        final_names_list: list[Path] = []
         for image_index, image in enumerate(temp_names_list):
-            image.rename(image.with_stem(f"{image_index + 1}"))
+            final_image = image.rename(image.with_stem(f"{image_index + 1}"))
+            final_names_list.append(final_image)
+
+        directory.images_list = final_names_list
 
     @classmethod
     def set_temp_names(cls, directory: Directory) -> list[Path]:
@@ -56,7 +50,6 @@ class ImageManager:
         for image in images_list:
             temp_name = image.rename(directory.path / f"temp_{image.name}")
             temp_names_list.append(temp_name)
-
         return temp_names_list
 
     @classmethod

@@ -1,10 +1,12 @@
 from arguments import Arguments
-from logging import Logger, getLogger, basicConfig, DEBUG
+from logging import Logger, getLogger, basicConfig, DEBUG, WARNING
 
+getLogger("PIL").setLevel(WARNING)
 ARGUMENTS = Arguments.get_arguments()
 IMAGE_EXTENSIONS: list[str] = [".jpg", ".png", ".jpeg", ".webp"]
 LOGGER: Logger = getLogger(__name__)
 MAXIMUM_IMAGE_COUNT_PER_DIRECTORY: int = ARGUMENTS.count
+RADIUS: int = ARGUMENTS.radius
 DIRECTORY_NAMES = (
     "akaname",  # the filth-licker demon
     "akkorokamui",  # giant octopus sea deity
