@@ -17,6 +17,14 @@ class Validator:
             self.log_error("Invalid input no such path exists ❌")
             sys.exit(1)
 
+        if self.input_path == self.input_path.parent:
+            confirmation = input(
+                "This it the root path, are you sure you want to continue? (y/n)\n"
+            )
+
+            if confirmation.lower() != "y":
+                return
+
         if self.input_path.is_dir():
             self.process_directory()
             sys.exit(0)
