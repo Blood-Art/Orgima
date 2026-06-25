@@ -6,8 +6,8 @@ from validation import Validator
 
 def main():
     input = Path(ARGUMENTS.path)
-    validatior = Validator(input)
-    validatior.validate_input()
+    validator = Validator(input)
+    validator.validate_input()
 
 
 if __name__ == "__main__":

@@ -153,14 +153,23 @@ class Directory:
 
     @classmethod
     def get_sorted_images(cls, root_directory_path: Path) -> tuple[list[Path], int]:
-        images_list: list[Path] = []
+        images_list: list[Path] = [
+            image
+            for image in root_directory_path.iterdir()
+            if image.is_file() and filetype.is_image(image)
+        ]
 
-        """ Accept only images """
-        for image in root_directory_path.iterdir():
-            if not filetype.is_image(image):
-                continue
-            images_list.append(image)
-
+        # """ Accept only images """
+        # for image in root_directory_path.iterdir():
+        #     if not filetype.is_image(image) and not image.is_file():
+        #         continue
+        #     images_list.append(image)
+        #
+        # images_list = [
+        #     image
+        #     for image in root_directory_path.iterdir()
+        #     if image.is_file() and filetype.is_image(image)
+        # ]
         number_of_images: int = len(images_list)
 
         return sorted(
