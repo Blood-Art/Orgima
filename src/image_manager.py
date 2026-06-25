@@ -1,3 +1,4 @@
+import filetype
 from image_manipulation import ImageManipulator
 from pathlib import Path
 from config import (
@@ -38,9 +39,20 @@ class ImageManager:
         temp_names_list: list[Path] = cls.set_temp_names(directory)
         final_names_list: list[Path] = []
         for image_index, image in enumerate(temp_names_list):
-            final_image = image.rename(image.with_stem(f"{image_index + 1}"))
-            final_names_list.append(final_image)
-
+            if not ARGUMENTS.no_extension:
+                kind = filetype.guess_extension(image)
+                final_image = image.rename(
+                    image.with_name(
+                        f"{ARGUMENTS.prefix}{image_index + 1}{ARGUMENTS.suffix}.{kind}"
+                    )
+                )
+            else:
+                final_image = image.rename(
+                    image.with_name(
+                        f"{ARGUMENTS.prefix}{image_index + 1}{ARGUMENTS.suffix}"
+                    )
+                )
+        final_names_list.append(final_image)
         directory.images_list = final_names_list
 
     @classmethod

@@ -1,3 +1,4 @@
+import filetype
 from config import (
     MAXIMUM_IMAGE_COUNT_PER_DIRECTORY,
     LOGGER,
@@ -156,7 +157,7 @@ class Directory:
 
         """ Accept only images """
         for image in root_directory_path.iterdir():
-            if image.suffix not in IMAGE_EXTENSIONS:
+            if not filetype.is_image(image):
                 continue
             images_list.append(image)
 

@@ -20,23 +20,23 @@ class Arguments:
         "-H",
         "--include_hidden",
         default=False,
-        help="Whether to include hidden directories or not. (default: %(default)s)",
         action="store_true",
+        help="Whether to include hidden directories or not. (default: %(default)s)",
     )
     parser.add_argument(
         "-d",
         "--disable_remove_duplicates",
         default=False,
-        help="Whether to disable removing non-upscaled duplicate images (default: %(default)s)",
         action="store_true",
+        help="Whether to disable removing non-upscaled duplicate images (default: %(default)s)",
     )
 
     parser.add_argument(
         "-R",
         "--enable_rounding",
         default=False,
-        help="Whether to enable rounding images or not. (default: %(default)s)",
         action="store_true",
+        help="Whether to enable rounding images or not. (default: %(default)s)",
     )
 
     parser.add_argument(
@@ -45,6 +45,29 @@ class Arguments:
         default=15,
         type=int,
         help="Set the rounding radius, this is capped at 100. (default: %(default)s)",
+    )
+
+    parser.add_argument(
+        "-p",
+        "--prefix",
+        default="",
+        type=str,
+        help="Set a prefix (name before index) for the image/s",
+    )
+    parser.add_argument(
+        "-s",
+        "--suffix",
+        default="",
+        type=str,
+        help="Set a suffix (name after index) for the image/s",
+    )
+
+    parser.add_argument(
+        "-e",
+        "--no_extension",
+        default=False,
+        action="store_true",
+        help="Don't include the images extension (stem)",
     )
 
     @staticmethod
