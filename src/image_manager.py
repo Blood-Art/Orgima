@@ -29,30 +29,30 @@ class ImageManager:
             LOGGER.info(f"Images in {directory.name} Organized successfully ✅")
             LOGGER.info("Task Finished")
 
-        if ARGUMENTS.enable_rounding:
-            for directory in Directory.directories_list:
-                manipulator = ImageManipulator(directory)
+        for directory in Directory.directories_list:
+            manipulator = ImageManipulator(directory)
+            if ARGUMENTS.enable_rounding:
                 manipulator.round_directory_images()
+
+            if ARGUMENTS.enable_upscale:
+                manipulator.scale_directory_images()
 
     @classmethod
     def rename_images(cls, directory: Directory) -> None:
         temp_names_list: list[Path] = cls.set_temp_names(directory)
         final_names_list: list[Path] = []
         for image_index, image in enumerate(temp_names_list):
+            final_image_name: str = (
+                f"{ARGUMENTS.prefix}{image_index + 1}{ARGUMENTS.suffix}"
+            )
             if not ARGUMENTS.no_extension:
                 kind = filetype.guess_extension(image)
                 final_image = image.rename(
-                    image.with_name(
-                        f"{ARGUMENTS.prefix}{image_index + 1}{ARGUMENTS.suffix}.{kind}"
-                    )
+                    image.with_name(f"{final_image_name}.{kind}")
                 )
             else:
-                final_image = image.rename(
-                    image.with_name(
-                        f"{ARGUMENTS.prefix}{image_index + 1}{ARGUMENTS.suffix}"
-                    )
-                )
-        final_names_list.append(final_image)
+                final_image = image.rename(image.with_name(final_image_name))
+            final_names_list.append(final_image)
         directory.images_list = final_names_list
 
     @classmethod

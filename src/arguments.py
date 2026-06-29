@@ -67,10 +67,27 @@ class Arguments:
         "--no_extension",
         default=False,
         action="store_true",
-        help="Don't include the images extension (stem)",
+        help="Don't include the images extension (format) (default: %(default)s)",
+    )
+
+    parser.add_argument(
+        "-U",
+        "--enable_upscale",
+        default=False,
+        action="store_true",
+        help="Enable image upscaling using the 'realesrgan-ncnn-vulkan' tool",
+    )
+
+    parser.add_argument(
+        "-u",
+        "--upscale_amount",
+        default=2,
+        type=int,
+        help="Upscale amount by an integer value",
     )
 
     @staticmethod
     def get_arguments():
-        args = Arguments.parser.parse_args()
-        return args
+        # args = Arguments.parser.parse_args()
+        args, tools_args = Arguments.parser.parse_known_args()
+        return args, tools_args

@@ -35,15 +35,19 @@ class Validator:
     def process_image(
         self,
     ) -> None:
+        manipulator = ImageManipulator(self.input_path)
         if ARGUMENTS.enable_rounding:
             LOGGER.info("Rounding Image...")
-            manipulator = ImageManipulator(self.input_path)
             manipulator.round_image(self.input_path)
             LOGGER.info("Task Finished")
-            return
-        LOGGER.warning(
-            "ignoring this action. There wasn't any flag provided for this image. orgima -h for more info."
-        )
+        if ARGUMENTS.enable_upscale:
+            LOGGER.info("Upscaling Image...")
+            manipulator.upscale_image(self.input_path)
+            LOGGER.info("Task Finished")
+        if not ARGUMENTS.enable_upscale and not ARGUMENTS.enable_rounding:
+            LOGGER.warning(
+                "ignoring this action. There wasn't any flag provided for this image. orgima -h for more info."
+            )
 
     def process_directory(self) -> None:
         self.log_flags()

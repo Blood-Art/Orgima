@@ -36,7 +36,6 @@ class Directory:
         directory.images_list, directory.image_count = cls.get_sorted_images(
             directory_path
         )
-
         if directory.is_empty():
             return
         if directory.is_empty_of_images():
@@ -158,18 +157,6 @@ class Directory:
             for image in root_directory_path.iterdir()
             if image.is_file() and filetype.is_image(image)
         ]
-
-        # """ Accept only images """
-        # for image in root_directory_path.iterdir():
-        #     if not filetype.is_image(image) and not image.is_file():
-        #         continue
-        #     images_list.append(image)
-        #
-        # images_list = [
-        #     image
-        #     for image in root_directory_path.iterdir()
-        #     if image.is_file() and filetype.is_image(image)
-        # ]
         number_of_images: int = len(images_list)
 
         return sorted(
