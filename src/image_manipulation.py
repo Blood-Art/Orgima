@@ -5,7 +5,7 @@ from PIL import Image as PilImage, ImageDraw
 from config import RADIUS, LOGGER, MAXIMUM_IMAGE_COUNT_PER_DIRECTORY
 from time import perf_counter
 from concurrent.futures import ProcessPoolExecutor
-from config import UPSCALE_AMOUNT, TOOLS_ARGUMENTS, IMAGE_EXTENSIONS
+from config import UPSCALE_AMOUNT, TOOLS_ARGUMENTS
 import subprocess
 import sys
 
@@ -16,18 +16,18 @@ class ImageManipulator:
 
     def __init__(self, input: Path | Directory):
         self.input = input
-
-    def initialize_rounding(self, input: Path | Directory) -> None:
         self.RADIUS = min(RADIUS, 100)
-        if not isinstance(input, Directory):
-            self.rounded_directory_path: Path = input.parent
-            return
-        self.directory = input
-        rounded_directory_image_count: int = self.directory.image_count * 2
-        self.rounded_directory_path: Path = self.directory.path
-        if rounded_directory_image_count > MAXIMUM_IMAGE_COUNT_PER_DIRECTORY:
-            self.rounded_directory_path = self.directory.path / "rounded"
-            self.rounded_directory_path.mkdir(parents=True, exist_ok=True)
+        if filetype.is_image(input):
+            self.rounded_directory_path = self.input.parent
+
+    def initialize_rounding_directory(self) -> None:
+        if isinstance(self.input, Directory):
+            self.directory: Directory = self.input
+            rounded_directory_image_count: int = self.directory.image_count * 2
+            self.rounded_directory_path: Path = self.directory.path
+            if rounded_directory_image_count > MAXIMUM_IMAGE_COUNT_PER_DIRECTORY:
+                self.rounded_directory_path = self.directory.path / "rounded"
+                self.rounded_directory_path.mkdir(parents=True, exist_ok=True)
 
     def round_image(self, image_path: Path) -> None:
         with PilImage.open(image_path) as img:
@@ -56,7 +56,7 @@ class ImageManipulator:
         )
 
     def round_directory_images(self) -> None:
-        self.initialize_rounding(self.input)
+        self.initialize_rounding_directory()
         LOGGER.info(
             f"Rounding {self.directory.image_count} images in {self.directory.name}, Radius: {self.RADIUS}"
         )

@@ -69,7 +69,7 @@ class ImageManager:
         upscaled_images_list = []
         images_list: list[Path] = directory.images_list
         for image in images_list:
-            if ("upscayl") not in image.name:
+            if ("upscale") not in image.name:
                 continue
             LOGGER.info(f"Found upscaled image '{image.name}'")
             match = re.match(r"^[^_]+", image.name)

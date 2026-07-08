@@ -3,7 +3,6 @@ from logging import Logger, getLogger, basicConfig, DEBUG, WARNING
 
 getLogger("PIL").setLevel(WARNING)
 ARGUMENTS, TOOLS_ARGUMENTS = Arguments.get_arguments()
-IMAGE_EXTENSIONS: list[str] = ["jpg", "png", "webp"]
 LOGGER: Logger = getLogger(__name__)
 MAXIMUM_IMAGE_COUNT_PER_DIRECTORY: int = ARGUMENTS.count
 RADIUS: int = ARGUMENTS.radius

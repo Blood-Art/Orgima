@@ -4,7 +4,6 @@ from config import (
     LOGGER,
     DIRECTORY_NAMES,
     ARGUMENTS,
-    IMAGE_EXTENSIONS,
 )
 from pathlib import Path
 
