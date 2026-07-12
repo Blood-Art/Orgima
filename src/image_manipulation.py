@@ -17,6 +17,9 @@ class ImageManipulator:
     def __init__(self, input: Path | Directory):
         self.input = input
         self.RADIUS = min(RADIUS, 100)
+        PilImage.MAX_IMAGE_PIXELS = 400_000_000
+        if isinstance(input, Directory):
+            return
         if filetype.is_image(input):
             self.rounded_directory_path = self.input.parent
 
@@ -68,9 +71,14 @@ class ImageManipulator:
 
     def upscale_image(self, image_path: Path) -> None:
         try:
-            kind = filetype.guess_extension(image_path)
+            format = filetype.guess_extension(image_path)
+            if "-f" in TOOLS_ARGUMENTS:
+                format_index = TOOLS_ARGUMENTS.index("-f") + 1
+                format = TOOLS_ARGUMENTS[format_index].lower()
+                print("Changing format...")
+
             output_path: Path = image_path.with_name(
-                f"{image_path.stem}_scaled_{UPSCALE_AMOUNT}x.{kind}"
+                f"{image_path.stem}_scaled_{UPSCALE_AMOUNT}x.{format}"
             )
             subprocess.run(
                 [
@@ -86,7 +94,8 @@ class ImageManipulator:
                 check=True,
             )
 
-            self.downscale_image(output_path)
+            """ The Default Upscale Amount for the x4plus-anime model is x4 so we divide by 4 """
+            self.downscale_image(output_path, format)
 
         except subprocess.CalledProcessError as e:
             LOGGER.error(f"Error: {e}")
@@ -95,24 +104,19 @@ class ImageManipulator:
             LOGGER.error(
                 "Error: realesrgan-ncnn-vulkan was not found in path, make sure it is installed."
             )
+            sys.exit(1)
 
-    def downscale_image(self, output_path: Path):
+    def downscale_image(self, output_path: Path, format: str):
         with PilImage.open(output_path) as img:
             scaled_img_size: tuple[int, int] = (
                 int(img.width * (UPSCALE_AMOUNT / 4)),
                 int(img.height * (UPSCALE_AMOUNT / 4)),
             )
-            new_format = img.format
-            print(new_format)
-            if "-f" in TOOLS_ARGUMENTS:
-                format_index = TOOLS_ARGUMENTS.index("-f") + 1
-                new_format = TOOLS_ARGUMENTS[format_index]
-                output_path = output_path.with_suffix(f".{new_format}")
-                print("Changing format...")
-
             resized_image = img.resize(scaled_img_size, PilImage.Resampling.LANCZOS)
-            new_format = new_format.upper() if new_format is not None else new_format
-            resized_image.save(output_path, format=new_format)
+            if format.lower() == "jpg":
+                format: str = "jpeg"
+            format = format.upper()
+            resized_image.save(output_path, format=format)
 
     def scale_directory_images(self) -> None:
         LOGGER.info(
