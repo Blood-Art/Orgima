@@ -14,3 +14,9 @@ orgima = "main:main"
 
 [tool.uv]
 package = true
+
+[tool.mypy]
+mypy_path = ["src"]
+
+explicit_package_bases = true
+namespace_packages = true

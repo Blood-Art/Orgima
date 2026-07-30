@@ -12,10 +12,6 @@ from directories import Directory
 class ImageManager:
     @classmethod
     def process_directory_images(cls) -> None:
-
-        if not Directory.directories_list:
-            return
-
         if not ARGUMENTS.disable_remove_duplicates:
             for directory in Directory.directories_list:
                 cls.remove_upscaled_duplicates(directory)
@@ -79,7 +75,7 @@ class ImageManager:
         for image in list(images_list):
             if image.stem in upscaled_images_list:
                 LOGGER.info(f"Deleted duplicate {image.name} image")
-                directory.remove_image_from_directory(image)
+                directory.move_image_from_directory(image)
                 image.unlink(missing_ok=True)
 
     def remove_duplicates(self, directory: Directory) -> None: ...

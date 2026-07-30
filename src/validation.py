@@ -51,8 +51,7 @@ class Validator:
 
     def process_directory(self) -> None:
         self.log_flags()
-        Directory.ROOT_DIRECTORY_PATH = self.input_path
-        Directory.initialize_directory_objects(self.input_path)
+        Directory.ROOT_DIRECTORY = Directory.initialize_directory(self.input_path)
         ImageManager.process_directory_images()
 
     def log_error(self, message: str):
