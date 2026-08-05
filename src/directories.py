@@ -1,12 +1,13 @@
-import filetype
-from config import (
-    MAXIMUM_IMAGE_COUNT_PER_DIRECTORY,
-    LOGGER,
-    DIRECTORY_NAMES,
-    ARGUMENTS,
-)
 from pathlib import Path
 
+import filetype
+
+from config import (
+    ARGUMENTS,
+    DIRECTORY_NAMES,
+    LOGGER,
+    MAXIMUM_IMAGE_COUNT_PER_DIRECTORY,
+)
 
 
 class Directory:
@@ -136,7 +137,7 @@ class Directory:
 
     def get_next_directory_name(self, directory_names: tuple[str, ...]) -> str:
         """ Exclude Root Path """
-        return directory_names[len(self.child_directories)]
+        return directory_names[len(self.directories_list) - 1]
 
     def remove_image_from_directory(self, image: Path):
         self.images_list.remove(image)
