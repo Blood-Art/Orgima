@@ -69,6 +69,7 @@ class Directory:
             child_directory = self.initialize_directory(child)
             self.child_directories.append(child_directory)
 
+
     def get_child_directory_paths(self) -> list[Path]:
         child_directory_paths: list[Path] = []
         for child in sorted(self.path.iterdir()):

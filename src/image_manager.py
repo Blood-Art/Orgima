@@ -1,12 +1,15 @@
-import filetype
-from image_manipulation import ImageManipulator
 from pathlib import Path
+
+import filetype
+import imagehash
+from PIL import Image as PilImage
+
 from config import (
-    LOGGER,
     ARGUMENTS,
+    LOGGER,
 )
-import re
 from directories import Directory
+from image_manipulation import ImageManipulator
 
 
 class ImageManager:
@@ -14,7 +17,7 @@ class ImageManager:
     def process_directory_images(cls) -> None:
         if not ARGUMENTS.disable_remove_duplicates:
             for directory in Directory.directories_list:
-                cls.remove_upscaled_duplicates(directory)
+                cls.check_duplicate_images(directory)
 
         for directory in Directory.directories_list:
             LOGGER.info(f"Checking {directory.name}'s image counts")
@@ -61,21 +64,25 @@ class ImageManager:
         return temp_names_list
 
     @classmethod
-    def remove_upscaled_duplicates(cls, directory: Directory) -> None:
-        upscaled_images_list = []
-        images_list: list[Path] = directory.images_list
+    def check_duplicate_images(cls, directory: Directory) -> None:
+        images_list: list[Path] = sorted(directory.images_list)
+        phashes_dict: dict[imagehash.ImageHash, str] = {}
+
         for image in images_list:
-            if ("upscale") not in image.name:
-                continue
-            LOGGER.info(f"Found upscaled image '{image.name}'")
-            match = re.match(r"^[^_]+", image.name)
-            if match:
-                upscaled_images_list.append(match.group())
+            with PilImage.open(image) as img:
+                hash: imagehash.ImageHash = imagehash.phash(img)
+                if hash not in phashes_dict:
+                    phashes_dict[hash] = image.name
+                    continue
 
-        for image in list(images_list):
-            if image.stem in upscaled_images_list:
-                LOGGER.info(f"Deleted duplicate {image.name} image")
-                directory.move_image_from_directory(image)
-                image.unlink(missing_ok=True)
-
-    def remove_duplicates(self, directory: Directory) -> None: ...
+                original_image_name: str | None = phashes_dict.get(hash)
+                LOGGER.info(f"Found Duplicate Image {image.name} with {original_image_name}")
+                while True:
+                    confirmation: str = input(f"Do you want to delete {image.name}? (y/n) ")
+                    if confirmation.lower() == "y" or confirmation == "":
+                        image.unlink()
+                        directory.remove_image_from_directory(image)
+                        LOGGER.info(f"Removed {image.name} successfully")
+                        break
+                    elif confirmation.lower() == "n":
+                        break

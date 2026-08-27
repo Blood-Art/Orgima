@@ -1,11 +1,12 @@
-from config import LOGGER
 import sys
 from pathlib import Path
-from config import ARGUMENTS
-from image_manipulation import ImageManipulator
+
+import filetype
+
+from config import ARGUMENTS, LOGGER
 from directories import Directory
 from image_manager import ImageManager
-import filetype
+from image_manipulation import ImageManipulator
 
 
 class Validator:
@@ -60,7 +61,7 @@ class Validator:
 
     def log_flags(self):
         if ARGUMENTS.include_hidden:
-            LOGGER.info("Include hidden directories Enabled ℹ️")
+            LOGGER.info("Include Hidden Directories Enabled ℹ️")
 
         if not ARGUMENTS.disable_remove_duplicates:
-            LOGGER.info("Remove Duplicate non-upscaled images Enabled ℹ️")
+            LOGGER.info("Checking For Image Duplication Enabled ℹ️")

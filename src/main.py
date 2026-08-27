@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from pathlib import Path
+
 from config import ARGUMENTS
 from validation import Validator
 

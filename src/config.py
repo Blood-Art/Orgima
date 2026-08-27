@@ -1,11 +1,15 @@
+from logging import DEBUG, WARNING, Logger, basicConfig, getLogger
+
+from PIL import PngImagePlugin
+
 from arguments import Arguments
-from logging import Logger, getLogger, basicConfig, DEBUG, WARNING
 
 getLogger("PIL").setLevel(WARNING)
 ARGUMENTS, TOOLS_ARGUMENTS = Arguments.get_arguments()
 LOGGER: Logger = getLogger(__name__)
 MAXIMUM_IMAGE_COUNT_PER_DIRECTORY: int = ARGUMENTS.count
 RADIUS: int = ARGUMENTS.radius
+PngImagePlugin.MAX_TEXT_CHUNK = 20 * 1024 * 1024 # type: ignore
 UPSCALE_AMOUNT: int = ARGUMENTS.upscale_amount
 DIRECTORY_NAMES = (
     "akaname",  # the filth-licker demon

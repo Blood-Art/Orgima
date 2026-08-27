@@ -1,13 +1,21 @@
-import filetype
-from directories import Directory
-from pathlib import Path
-from PIL import Image as PilImage, ImageDraw
-from config import RADIUS, LOGGER, MAXIMUM_IMAGE_COUNT_PER_DIRECTORY
-from time import perf_counter
-from concurrent.futures import ProcessPoolExecutor
-from config import UPSCALE_AMOUNT, TOOLS_ARGUMENTS
 import subprocess
 import sys
+from concurrent.futures import ProcessPoolExecutor
+from pathlib import Path
+from time import perf_counter
+
+import filetype
+from PIL import Image as PilImage
+from PIL import ImageDraw
+
+from config import (
+    LOGGER,
+    MAXIMUM_IMAGE_COUNT_PER_DIRECTORY,
+    RADIUS,
+    TOOLS_ARGUMENTS,
+    UPSCALE_AMOUNT,
+)
+from directories import Directory
 
 
 class ImageManipulator:
