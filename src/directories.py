@@ -13,6 +13,7 @@ from config import (
 class Directory:
     ROOT_DIRECTORY: Directory | None = None
     directories_list: list[Directory] = []
+    whole_images_list: list[Path] = []
 
     def __init__(
         self,
@@ -35,6 +36,7 @@ class Directory:
         cls.directories_list.append(directory)
         directory.process_child_directories()
         directory.images_list = directory.get_sorted_images()
+        cls.whole_images_list.extend(directory.images_list)
         directory.image_count = directory.get_image_count()
         return directory
 

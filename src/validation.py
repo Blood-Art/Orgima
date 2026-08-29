@@ -63,5 +63,8 @@ class Validator:
         if ARGUMENTS.include_hidden:
             LOGGER.info("Include Hidden Directories Enabled ℹ️")
 
-        if not ARGUMENTS.disable_remove_duplicates:
+        if ARGUMENTS.match_size:
+            LOGGER.info("Matching Image Size to 3840x2160 Enabled ℹ️")
+
+        if ARGUMENTS.remove_duplicates:
             LOGGER.info("Checking For Image Duplication Enabled ℹ️")

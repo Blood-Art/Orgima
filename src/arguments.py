@@ -17,7 +17,7 @@ class Arguments:
     )
 
     parser.add_argument(
-        "-H",
+        "-i",
         "--include_hidden",
         default=False,
         action="store_true",
@@ -25,10 +25,10 @@ class Arguments:
     )
     parser.add_argument(
         "-d",
-        "--disable_remove_duplicates",
+        "--remove_duplicates",
         default=False,
         action="store_true",
-        help="Whether to disable removing non-upscaled duplicate images (default: %(default)s)",
+        help="Whether to check for and remove duplicated/copies of images (default: %(default)s)",
     )
 
     parser.add_argument(
@@ -67,7 +67,7 @@ class Arguments:
         "--no_extension",
         default=False,
         action="store_true",
-        help="Don't include the images extension (format) (default: %(default)s)",
+        help="Don't include the images extension in the renaming process (format) (default: %(default)s)",
     )
 
     parser.add_argument(
@@ -84,6 +84,14 @@ class Arguments:
         default=2,
         type=int,
         help="Upscale amount by an integer value",
+    )
+
+    parser.add_argument(
+        "-m",
+        "--match_size",
+        default=False,
+        action="store_true",
+        help="Enable Checking and Matching images scale/size"
     )
 
     @staticmethod

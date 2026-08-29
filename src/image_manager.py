@@ -15,9 +15,13 @@ from image_manipulation import ImageManipulator
 class ImageManager:
     @classmethod
     def process_directory_images(cls) -> None:
-        if not ARGUMENTS.disable_remove_duplicates:
+        if ARGUMENTS.remove_duplicates:
             for directory in Directory.directories_list:
                 cls.check_duplicate_images(directory)
+
+        if ARGUMENTS.match_size:
+            for directory in Directory.directories_list:
+                cls.check_image_sizes(directory)
 
         for directory in Directory.directories_list:
             LOGGER.info(f"Checking {directory.name}'s image counts")
@@ -66,23 +70,36 @@ class ImageManager:
     @classmethod
     def check_duplicate_images(cls, directory: Directory) -> None:
         images_list: list[Path] = sorted(directory.images_list)
-        phashes_dict: dict[imagehash.ImageHash, str] = {}
+        phashes_dict: dict[imagehash.ImageHash, Path] = {}
 
         for image in images_list:
             with PilImage.open(image) as img:
                 hash: imagehash.ImageHash = imagehash.phash(img)
                 if hash not in phashes_dict:
-                    phashes_dict[hash] = image.name
+                    phashes_dict[hash] = image
                     continue
 
-                original_image_name: str | None = phashes_dict.get(hash)
-                LOGGER.info(f"Found Duplicate Image {image.name} with {original_image_name}")
+                original_image: Path | None = phashes_dict.get(hash)
+
+                if isinstance(original_image, Path):
+                    LOGGER.info(f"Found Duplicate Image {image.parent.name}/{image.name} with {original_image.parent.name}/{original_image.name}")
                 while True:
-                    confirmation: str = input(f"Do you want to delete {image.name}? (y/n) ")
+                    confirmation: str = input(f"Do you want to delete {image.parent.name}/{image.name}? (y/n) ")
                     if confirmation.lower() == "y" or confirmation == "":
                         image.unlink()
-                        directory.remove_image_from_directory(image)
+                        if directory.name == image.parent.name:
+                            directory.remove_image_from_directory(image)
+                        Directory.whole_images_list.remove(image)
                         LOGGER.info(f"Removed {image.name} successfully")
                         break
                     elif confirmation.lower() == "n":
                         break
+
+    @classmethod
+    def check_image_sizes(cls, directory: Directory):
+        for image in directory.images_list:
+            with PilImage.open(image) as img:
+                if img.size != (3840,2160):
+                    LOGGER.info(f"{image.name} is not of size 3840x2160")
+
+
