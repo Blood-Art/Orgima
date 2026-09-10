@@ -2,7 +2,6 @@ import subprocess
 import sys
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
-from time import perf_counter
 
 import filetype
 from PIL import Image as PilImage
@@ -71,11 +70,9 @@ class ImageManipulator:
         LOGGER.info(
             f"Rounding {self.directory.image_count} images in {self.directory.name}, Radius: {self.RADIUS}"
         )
-        start = perf_counter()
         with ProcessPoolExecutor() as executor:
             executor.map(self.round_image, self.directory.images_list)
-        end = perf_counter()
-        LOGGER.info(f"it took {end - start:0.2f} seconds to finish rounding")
+
 
     def upscale_image(self, image_path: Path) -> None:
         try:
@@ -133,5 +130,4 @@ class ImageManipulator:
         start = perf_counter()
         with ProcessPoolExecutor() as executor:
             executor.map(self.upscale_image, self.directory.images_list)
-        end = perf_counter()
         LOGGER.info(f"it took {end - start:0.2f} seconds to finish upscaling")

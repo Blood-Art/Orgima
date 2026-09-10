@@ -7,6 +7,7 @@ from config import ARGUMENTS, LOGGER
 from directories import Directory
 from image_manager import ImageManager
 from image_manipulation import ImageManipulator
+from utils import confirmation
 
 
 class Validator:
@@ -19,11 +20,10 @@ class Validator:
             sys.exit(1)
 
         if self.input_path == self.input_path.parent:
-            confirmation = input(
-                "This it the root path, are you sure you want to continue? (y/n)\n"
-            )
+            message = "This it the root path, are you sure you want to continue?"
+            response: bool = confirmation(message=message)
 
-            if confirmation.lower() != "y":
+            if response != "y":
                 return
 
         if self.input_path.is_dir():
