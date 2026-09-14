@@ -1,9 +1,12 @@
+import sys
 from pathlib import Path
+from re import search
 
 import filetype
 import imagehash
 from PIL import Image as PilImage
 
+import config
 import utils
 from config import (
     ARGUMENTS,
@@ -23,7 +26,7 @@ class ImageManager:
 
         if ARGUMENTS.match_size:
             for directory in Directory.directories_list:
-                cls.check_image_sizes(directory)
+                utils.time_function(cls.check_image_sizes, directory)
 
         for directory in Directory.directories_list:
             LOGGER.info(f"Checking {directory.name}'s image counts")
@@ -96,18 +99,32 @@ class ImageManager:
 
     @classmethod
     def check_image_sizes(cls, directory: Directory):
+        if config.MATCH_IMAGE_SIZE != config.DEFAULT_MATCH_SIZE:
+            requested_size = cls.parse_resolution_string()
+        else:
+            requested_size = utils.convert_str_resolution_to_tuple(config.DEFAULT_MATCH_SIZE)
+
         for image in directory.images_list:
             with PilImage.open(image) as img:
-                if img.size == (3840,2160):
+                if img.size == requested_size:
                     continue
-                LOGGER.info(f"{image.name} is not of size 3840x2160")
-                message: str = "Do you want to scale this image to 3840x2160?"
+                LOGGER.info(f"{image.name} is not of size {requested_size}")
+                message: str = f"Do you want to scale this image to {requested_size}?"
                 response: bool = confirmation(message)
                 if response:
                     origial_path = image.joinpath(image.parent,image.name)
-                    print(origial_path)
-                    resized_image = img.resize((3840,2160))
+                    resized_image = img.resize(requested_size)
                     resized_image.save(origial_path)
+    @classmethod
+    def parse_resolution_string(cls, match_size_string: str = config.MATCH_IMAGE_SIZE) -> tuple[int, int]:
+        match = search(r"\b\d{3,4}[xX]\d{3,4}\b", match_size_string)
+        if not match:
+            LOGGER.error("Size Match is not Correct. Make sure it's in the format WxH Where W is the width and H is the height of the image.")
+            sys.exit(1)
+            
+        width, height = utils.convert_str_resolution_to_tuple(match.group())
+            
+        return (width, height)
 
 
 

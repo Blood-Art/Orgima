@@ -8,6 +8,8 @@ getLogger("PIL").setLevel(WARNING)
 ARGUMENTS, TOOLS_ARGUMENTS = Arguments.get_arguments()
 LOGGER: Logger = getLogger(__name__)
 MAXIMUM_IMAGE_COUNT_PER_DIRECTORY: int = ARGUMENTS.count
+MATCH_IMAGE_SIZE: str = ARGUMENTS.set_size
+DEFAULT_MATCH_SIZE: str = "3840x2160"
 RADIUS: int = ARGUMENTS.radius
 PngImagePlugin.MAX_TEXT_CHUNK = 20 * 1024 * 1024 # type: ignore
 UPSCALE_AMOUNT: int = ARGUMENTS.upscale_amount

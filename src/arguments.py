@@ -87,15 +87,29 @@ class Arguments:
     )
 
     parser.add_argument(
-        "-m",
+        "-M",
         "--match_size",
         default=False,
         action="store_true",
         help="Enable Checking and Matching images scale/size"
     )
 
+    parser.add_argument(
+        "-m",
+        "--set_size",
+        default="3840x2160",
+        type=str,
+        help="Set the size for matching image Resolution (default: $(default)s)"
+    )
+    parser.add_argument(
+        "-y",
+        "--no_prompt",
+        default=False,
+        action="store_true",
+        help="Disable the prompt for Confirmation. (Yes To Everything)"
+    )
+
     @staticmethod
     def get_arguments():
-        # args = Arguments.parser.parse_args()
         args, tools_args = Arguments.parser.parse_known_args()
         return args, tools_args

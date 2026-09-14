@@ -3,6 +3,7 @@ from pathlib import Path
 
 import filetype
 
+import config
 from config import ARGUMENTS, LOGGER
 from directories import Directory
 from image_manager import ImageManager
@@ -64,7 +65,7 @@ class Validator:
             LOGGER.info("Include Hidden Directories Enabled ℹ️")
 
         if ARGUMENTS.match_size:
-            LOGGER.info("Matching Image Size to 3840x2160 Enabled ℹ️")
+            LOGGER.info(f"Matching Image Size to {config.MATCH_IMAGE_SIZE} Enabled ℹ️")
 
         if ARGUMENTS.remove_duplicates:
             LOGGER.info("Checking For Image Duplication Enabled ℹ️")
