@@ -1,6 +1,7 @@
 from pathlib import Path
+from typing import ClassVar
 
-import filetype
+from filetype import is_image
 
 from config import (
     ARGUMENTS,
@@ -12,8 +13,8 @@ from config import (
 
 class Directory:
     ROOT_DIRECTORY: Directory | None = None
-    directories_list: list[Directory] = []
-    whole_images_list: list[Path] = []
+    directories_list: ClassVar = []
+    whole_images_list: ClassVar = []
 
     def __init__(
         self,
@@ -52,7 +53,7 @@ class Directory:
         images_list: list[Path] = [
             image
             for image in self.path.iterdir()
-            if image.is_file() and filetype.is_image(image)
+            if image.is_file() and is_image(image)
         ]
 
         return sorted(
@@ -70,7 +71,6 @@ class Directory:
             )
             child_directory = self.initialize_directory(child)
             self.child_directories.append(child_directory)
-
 
     def get_child_directory_paths(self) -> list[Path]:
         child_directory_paths: list[Path] = []
@@ -163,7 +163,7 @@ class Directory:
         return self.image_count > MAXIMUM_IMAGE_COUNT_PER_DIRECTORY
 
     def is_empty_of_images(self) -> bool:
-        return not any(image for image in self.path.iterdir() if image.is_file() and filetype.is_image(image))
+        return not any(image for image in self.path.iterdir() if image.is_file() and is_image(image))
 
     def is_empty(self) -> bool:
         return not any(self.path.iterdir())

@@ -68,6 +68,8 @@ class ImageManager:
         images_list: list[Path] = directory.images_list
         temp_names_list = []
         for image in images_list:
+            if not ARGUMENTS.include_hidden and image.name.startswith("."):
+                continue
             temp_name = image.rename(directory.path / f"temp_{image.name}")
             temp_names_list.append(temp_name)
         return temp_names_list
@@ -88,14 +90,14 @@ class ImageManager:
                 if isinstance(original_image, Path):
                     LOGGER.info(f"Found Duplicate Image {image.parent.name}/{image.name} with {original_image.parent.name}/{original_image.name}")
 
-                message: str = f"Do you want to delete {image.parent.name}/{image.name}?"
+                message: str = f"Do you want to Delete {image.parent.name}/{image.name}?"
                 response = confirmation(message=message)
                 if response:
                     image.unlink()
                     if directory.name == image.parent.name:
                         directory.remove_image_from_directory(image)
                     Directory.whole_images_list.remove(image)
-                    LOGGER.info(f"Removed {image.name} successfully")
+                    LOGGER.info(f"Removed {image.name} Successfully")
 
     @classmethod
     def check_image_sizes(cls, directory: Directory):

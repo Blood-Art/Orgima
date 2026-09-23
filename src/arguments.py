@@ -2,7 +2,7 @@ import argparse
 
 
 class Arguments:
-    parser = argparse.ArgumentParser(description="Origma Args")
+    parser = argparse.ArgumentParser(description="Orgima Args: ")
     parser.add_argument(
         "path",
         type=str,
