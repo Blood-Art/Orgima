@@ -38,8 +38,8 @@ positional (required) arguments:
   |-s, --suffix SUFFIX     | Set a suffix (name after index) for the image/s. |
   |-e, --no_extension      | Don't include the images extension in the renaming process (format) (default: False). |
   |-U, --enable_upscale | Enable image upscaling using the 'realesrgan-ncnn-vulkan' tool (default: False). |
-  |-u, --upscale_amount UPSCALE_AMOUNT | Upscale amount by an integer value (default: 2). |
-  |-M, --match_size      Enable Checking and Matching images scale/size (default: False). |
+  |-u, --upscale_amount | UPSCALE_AMOUNT | Upscale amount by an integer value (default: 2). |
+  |-M, --match_size     | Enable Checking and Matching images scale/size (default: False). |
   |-m, --set_size SET_SIZE | Set the size for matching image Resolution (default: 3840x2160). |
   |-y, --no_prompt | Disable the prompt for Confirmation. (Yes To Everything) (default: False). |
 
