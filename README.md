@@ -21,7 +21,9 @@ Orgima is a simple CLI tool to organize and process your image or wallpaper libr
 If you want the upscaling feature make sure you have [realesrgan-ncnn-vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan) installed.
 
 ## Usage
+``` bash
 orgima [-h] [-c COUNT] [-i] [-d] [-R] [-r RADIUS] [-p PREFIX] [-s SUFFIX] [-e] [-U] [-u UPSCALE_AMOUNT] [-M] [-m SET_SIZE] [-y] path
+```
 
 Orgima Args:
 positional (required) arguments:
