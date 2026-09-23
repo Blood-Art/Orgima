@@ -28,6 +28,7 @@ positional (required) arguments:
   path                  Input Path for a directory or image path to modify.
 
   | Options:                | Description |
+  |  :---                   |   :--- |
   | -h, --help              | show this help message and exit. |
   | -c, --count COUNT       | Set the image count limit per directory. (default: 100). |
   | -i, --include_hidden    | Whether to include hidden directories or not. (default: False). |
