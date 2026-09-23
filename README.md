@@ -27,21 +27,21 @@ Orgima Args:
 positional (required) arguments:
   path                  Input Path for a directory or image path to modify.
 
-  Options:                 | Description |
-  |-h, --help              | show this help message and exit. |
-  |-c, --count COUNT       | Set the image count limit per directory. (default: 100). |
-  |-i, --include_hidden    | Whether to include hidden directories or not. (default: False). |
-  |-d, --remove_duplicates | Whether to check for and remove duplicated/copies of images.(default: False). |
-  |-R, --enable_rounding   | Whether to enable rounding images or not. (default: False). |
-  |-r, --radius RADIUS     | Set the rounding radius, this is capped at 100. (default: 15). |
-  |-p, --prefix PREFIX     | Set a prefix (name before index) for the image/s. |
-  |-s, --suffix SUFFIX     | Set a suffix (name after index) for the image/s. |
-  |-e, --no_extension      | Don't include the images extension in the renaming process (format) (default: False). |
-  |-U, --enable_upscale | Enable image upscaling using the 'realesrgan-ncnn-vulkan' tool (default: False). |
-  |-u, --upscale_amount | UPSCALE_AMOUNT | Upscale amount by an integer value (default: 2). |
-  |-M, --match_size     | Enable Checking and Matching images scale/size (default: False). |
-  |-m, --set_size SET_SIZE | Set the size for matching image Resolution (default: 3840x2160). |
-  |-y, --no_prompt | Disable the prompt for Confirmation. (Yes To Everything) (default: False). |
+  | Options:                | Description |
+  | -h, --help              | show this help message and exit. |
+  | -c, --count COUNT       | Set the image count limit per directory. (default: 100). |
+  | -i, --include_hidden    | Whether to include hidden directories or not. (default: False). |
+  | -d, --remove_duplicates | Whether to check for and remove duplicated/copies of images.(default: False). |
+  | -R, --enable_rounding   | Whether to enable rounding images or not. (default: False). |
+  | -r, --radius RADIUS     | Set the rounding radius, this is capped at 100. (default: 15). |
+  | -p, --prefix PREFIX     | Set a prefix (name before index) for the image/s. |
+  | -s, --suffix SUFFIX     | Set a suffix (name after index) for the image/s. |
+  | -e, --no_extension      | Don't include the images extension in the renaming process (format) (default: False). |
+  | -U, --enable_upscale | Enable image upscaling using the 'realesrgan-ncnn-vulkan' tool (default: False). |
+  | -u, --upscale_amount | UPSCALE_AMOUNT | Upscale amount by an integer value (default: 2). |
+  | -M, --match_size     | Enable Checking and Matching images scale/size (default: False). |
+  | -m, --set_size SET_SIZE | Set the size for matching image Resolution (default: 3840x2160). |
+  | -y, --no_prompt | Disable the prompt for Confirmation. (Yes To Everything) (default: False). |
 
 ## License
 MIT License. See [LICENSE](LICENSE) for details.
