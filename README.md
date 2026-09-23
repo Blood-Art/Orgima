@@ -25,12 +25,9 @@ If you want the upscaling feature make sure you have [realesrgan-ncnn-vulkan](ht
 orgima [-h] [-c COUNT] [-i] [-d] [-R] [-r RADIUS] [-p PREFIX] [-s SUFFIX] [-e] [-U] [-u UPSCALE_AMOUNT] [-M] [-m SET_SIZE] [-y] path
 ```
 
-Orgima Args:
-positional (required) arguments:
-  path                  Input Path for a directory or image path to modify.
-
   | Options:                | Description |
   |  :---                   |   :--- |
+  |  path (Required)        | Input Path for a directory or image path to modify. |
   | -h, --help              | show this help message and exit. |
   | -c, --count COUNT       | Set the image count limit per directory. (default: 100). |
   | -i, --include_hidden    | Whether to include hidden directories or not. (default: False). |
