@@ -66,9 +66,9 @@ orgima [-h] [-c COUNT] [-i] [-d] [-R] [-r RADIUS] [-p PREFIX] [-s SUFFIX] [-e] [
   | Options:                | Description |
   |  :---                   |   :--- |
   |  path (Required)        | Input Path for a directory or image path to modify. |
-  | -h, --help              | show this help message and exit. |
+  | -h, --help              | Show this help message and exit. |
   | -c, --count COUNT       | Set the image count limit per directory. (default: 100). |
-  | -i, --include_hidden    | Whether to include hidden directories or not. (default: False). |
+  | -i, --include_hidden    | Whether to include hidden directories and images or not. (default: False). |
   | -d, --remove_duplicates | Whether to check for and remove duplicated/copies of images.(default: False). |
   | -R, --enable_rounding   | Whether to enable rounding images or not. (default: False). |
   | -r, --radius RADIUS     | Set the rounding radius, this is capped at 100. (default: 15). |
