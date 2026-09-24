@@ -1,7 +1,11 @@
 <h1 align="center"> Orgima 🖼️ </h1>
 
+
+
 ## About
 Orgima is a simple CLI tool to organize and process your image or wallpaper library.
+
+
 
 ## Features
 - Detect duplicate images and delete them.
@@ -11,6 +15,8 @@ Orgima is a simple CLI tool to organize and process your image or wallpaper libr
 - Upscaling images.
 - Grouping, Sorting, Moving images.
 
+
+
 ## Dependencies
 - filetype
 - imagehash
@@ -19,6 +25,8 @@ Orgima is a simple CLI tool to organize and process your image or wallpaper libr
 
 ## Installation
 If you want the upscaling feature make sure you have [realesrgan-ncnn-vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan) installed.
+
+
 
 ## Usage
 ``` bash
@@ -42,6 +50,8 @@ orgima [-h] [-c COUNT] [-i] [-d] [-R] [-r RADIUS] [-p PREFIX] [-s SUFFIX] [-e] [
   | -M, --match_size     | Enable Checking and Matching images scale/size (default: False). |
   | -m, --set_size SET_SIZE | Set the size for matching image Resolution (default: 3840x2160). |
   | -y, --no_prompt | Disable the prompt for Confirmation. (Yes To Everything) (default: False). |
+
+
 
 ## License
 MIT License. See [LICENSE](LICENSE) for details.
