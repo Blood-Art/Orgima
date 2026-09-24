@@ -44,13 +44,13 @@ git clone https://github.com/Blood-Art/Orgima.git orgima-test && cd orgima-test 
 ## Uninstallation
 If you do decide to uninstall here is how :    
 
-With UV:  
+with UV:  
 ```bash
 uv tool uninstall orgima
-```
+```   
 
+with pipx:  
 ```bash
-With pipx:  
 pipx uninstall orgima
 ```
 
