@@ -1,4 +1,4 @@
-# Orgima
+<h1 align="center"> Orgima 🖼️ </h1>
 
 ## About
 Orgima is a simple CLI tool to organize and process your image or wallpaper library.
