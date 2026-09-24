@@ -21,10 +21,20 @@ Orgima is a simple CLI tool to organize and process your image or wallpaper libr
 - filetype
 - imagehash
 - pillow
-- (optional) realesrgan-ncnn-vulkan for upscaling.
+- UV or pipx to install the tool
+- (optional) realesrgan-ncnn-vulkan for upscaling
 
 ## Installation
 If you want the upscaling feature make sure you have [realesrgan-ncnn-vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan) installed.
+quick one line installs:
+if you have the modern UV package manager :
+``` bash
+git clone https://github.com/Blood-Art/Orgima.git orgima-test && cd orgima-test && uv tool install . && cd ./.. && rm -rf orgima-test
+```
+or if you have pipx : 
+``` bash
+git clone https://github.com/Blood-Art/Orgima.git orgima-test && cd orgima-test && pipx install . && cd ./.. && rm -rf orgima-test
+```
 
 
 
