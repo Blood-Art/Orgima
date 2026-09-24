@@ -27,6 +27,7 @@ Orgima is a simple CLI tool to organize and process your image or wallpaper libr
 
 
 ## Installation
+[!NOTE]
 If you want the upscaling feature make sure you have [realesrgan-ncnn-vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan) installed.    
 
 Quick one liner installs:  
