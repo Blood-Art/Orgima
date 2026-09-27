@@ -21,7 +21,7 @@ class Arguments:
         "--include_hidden",
         default=False,
         action="store_true",
-        help="Whether to include hidden directories or not. (default: %(default)s)",
+        help="Whether to include hidden directories and images or not. (default: %(default)s)",
     )
     parser.add_argument(
         "-d",
@@ -75,7 +75,7 @@ class Arguments:
         "--enable_upscale",
         default=False,
         action="store_true",
-        help="Enable image upscaling using the 'realesrgan-ncnn-vulkan' tool",
+        help="Enable image upscaling using the 'realesrgan-ncnn-vulkan' tool (default: %(default)s)",
     )
 
     parser.add_argument(
@@ -83,7 +83,7 @@ class Arguments:
         "--upscale_amount",
         default=2,
         type=int,
-        help="Upscale amount by an integer value",
+        help="Upscale amount by an integer value (default: %(default)s)",
     )
 
     parser.add_argument(
@@ -91,7 +91,7 @@ class Arguments:
         "--match_size",
         default=False,
         action="store_true",
-        help="Enable Checking and Matching images scale/size"
+        help="Enable Checking and Matching images scale/size (default: %(default)s)"
     )
 
     parser.add_argument(
@@ -99,14 +99,14 @@ class Arguments:
         "--set_size",
         default="3840x2160",
         type=str,
-        help="Set the size for matching image Resolution (default: $(default)s)"
+        help="Set the size for matching image Resolution (default: %(default)s)"
     )
     parser.add_argument(
         "-y",
         "--no_prompt",
         default=False,
         action="store_true",
-        help="Disable the prompt for Confirmation. (Yes To Everything)"
+        help="Disable the prompt for Confirmation. (Yes To Everything) (default: %(default)s)"
     )
 
     @staticmethod

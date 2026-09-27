@@ -26,13 +26,13 @@ class ImageManipulator:
         self.RADIUS = min(RADIUS, 100)
         PilImage.MAX_IMAGE_PIXELS = 400_000_000
         if isinstance(input, Directory):
+            self.directory: Directory = self.input
             return
         if filetype.is_image(input):
             self.rounded_directory_path = self.input.parent
 
     def initialize_rounding_directory(self) -> None:
         if isinstance(self.input, Directory):
-            self.directory: Directory = self.input
             rounded_directory_image_count: int = self.directory.image_count * 2
             self.rounded_directory_path: Path = self.directory.path
             if rounded_directory_image_count > MAXIMUM_IMAGE_COUNT_PER_DIRECTORY:
@@ -46,8 +46,8 @@ class ImageManipulator:
                 * (self.RADIUS * self.RADIUS_MAGNITUDE)
             )
             mask = PilImage.new(mode="L", size=img.size)
-            draw = ImageDraw.Draw(mask)
-            draw.rounded_rectangle(
+            canvas = ImageDraw.Draw(mask)
+            canvas.rounded_rectangle(
                 xy=[(0, 0), img.size], radius=proportional_radius, fill=255
             )
             self.save_rounded_image(img, mask, image_path)
@@ -111,7 +111,7 @@ class ImageManipulator:
             )
             sys.exit(1)
 
-    def downscale_image(self, output_path: Path, format: str):
+    def downscale_image(self, output_path: Path, format: str) -> None:
         with PilImage.open(output_path) as img:
             scaled_img_size: tuple[int, int] = (
                 int(img.width * (UPSCALE_AMOUNT / 4)),
@@ -127,7 +127,5 @@ class ImageManipulator:
         LOGGER.info(
             f"Scaling {self.directory.image_count} images in {self.directory.name}, UPSCALE_AMOUNT: {UPSCALE_AMOUNT}"
         )
-        start = perf_counter()
         with ProcessPoolExecutor() as executor:
             executor.map(self.upscale_image, self.directory.images_list)
-        LOGGER.info(f"it took {end - start:0.2f} seconds to finish upscaling")

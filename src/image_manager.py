@@ -43,7 +43,7 @@ class ImageManager:
                 utils.time_function(manipulator.round_directory_images)
 
             if ARGUMENTS.enable_upscale:
-                manipulator.scale_directory_images()
+                utils.time_function(manipulator.scale_directory_images)
 
     @classmethod
     def rename_images(cls, directory: Directory) -> None:
