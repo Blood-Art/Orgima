@@ -13,12 +13,15 @@ from utils import confirmation
 
 class Validator:
     def __init__(self, input_path: Path):
-        self.input_path = input_path
+        self.input_path: Path = input_path
 
     def validate_input(self) -> None:
         if not self.input_path.exists():
             self.log_error("Invalid input no such path exists ❌")
             sys.exit(1)
+
+        if self.input_path == Path():
+            self.input_path = Path().absolute()
 
         if self.input_path == self.input_path.parent:
             message = "This it the root path, are you sure you want to continue?"

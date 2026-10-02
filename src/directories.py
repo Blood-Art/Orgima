@@ -15,7 +15,7 @@ class Directory:
     ROOT_DIRECTORY: Directory | None = None
     directories_list: ClassVar = []
     whole_images_list: ClassVar = []
-
+    
     def __init__(
         self,
         path: Path,
@@ -40,6 +40,7 @@ class Directory:
         cls.whole_images_list.extend(directory.images_list)
         directory.image_count = directory.get_image_count()
         return directory
+
 
     def log_directory_state(self):
         if self.is_empty():
@@ -103,6 +104,7 @@ class Directory:
         )
         self.remove_image_from_directory(last_image)
         self.move_image_to_directory(free_directory, last_image, image_destination)
+
     
     def find_free_directory(self) -> Directory:
         for directory in self.child_directories:
