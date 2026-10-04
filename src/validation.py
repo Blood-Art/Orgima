@@ -23,6 +23,7 @@ class Validator:
         if self.input_path == Path():
             self.input_path = Path().absolute()
 
+        """ If the input is the root path / """
         if self.input_path == self.input_path.parent:
             message = "This it the root path, are you sure you want to continue?"
             response: bool = confirmation(message=message)

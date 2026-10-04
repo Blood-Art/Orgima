@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from pathlib import Path
 from time import perf_counter
 
 from config import ARGUMENTS, LOGGER
@@ -14,6 +15,7 @@ def confirmation(message: str) -> bool:
         elif confirmation == "n":
             return False
 
+
 def time_function(fn: Callable, *args, **kwargs):
     start_time: float = perf_counter()
     result = fn(*args, **kwargs)
@@ -21,8 +23,12 @@ def time_function(fn: Callable, *args, **kwargs):
     LOGGER.info(f"Task Finished in {finish_time - start_time:0.2f} Seconds")
     return result
 
+
 def convert_str_resolution_to_tuple(resolution: str) -> tuple[int, int]:
     width, height = map(int, resolution.lower().split("x"))
     return (width, height)
-    
 
+
+def check_for_hidden_image(image: Path):
+    if not ARGUMENTS.include_hidden and image.name.startswith("."):
+        return
